@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import ostepu.process.commands.postProcess;
+import ostepu.request.httpAuth;
 
 /**
  *
@@ -56,6 +57,8 @@ public class process extends HttpServlet {
         PrintWriter out = response.getWriter();
         String pathInfo = StringUtils.substring(request.getRequestURI(), request.getContextPath().length());
         
+        // lädt die Anmeldedaten (eventuell für eine httpAuth)
+        httpAuth.loadLocalAuthData(getServletContext());
 
         String method = request.getMethod();
         try {

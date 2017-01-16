@@ -7,6 +7,7 @@ package ostepu.structure;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class process extends structure {
      */
     public static Object decode(String content) {
         JsonElement obj = new JsonParser().parse(String.join("", content));
-        if (obj == null) {
+        if (obj.isJsonNull()) {
             return null;
         }
         JsonObject newObj = obj.getAsJsonObject();

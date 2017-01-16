@@ -5,22 +5,13 @@
  */
 package ostepu.request;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
-import java.util.Scanner;
-import java.util.stream.Collectors;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -31,6 +22,174 @@ import org.apache.commons.io.IOUtils;
 public class httpRequest {
 
     /**
+     *
+     * @param url
+     * @return
+     * @throws MalformedURLException
+     * @throws ProtocolException
+     * @throws IOException
+     */
+    public static httpRequestResult custom(String url) throws MalformedURLException, ProtocolException, IOException {
+        return custom(url, "GET", "", new noAuth());
+    }
+
+    /**
+     *
+     * @param url
+     * @param auth
+     * @return
+     * @throws MalformedURLException
+     * @throws ProtocolException
+     * @throws IOException
+     */
+    public static httpRequestResult custom(String url, authentication auth) throws MalformedURLException, ProtocolException, IOException {
+        return custom(url, "GET", "", auth);
+    }
+
+    /**
+     *
+     * @param url
+     * @param method
+     * @return
+     * @throws MalformedURLException
+     * @throws ProtocolException
+     * @throws IOException
+     */
+    public static httpRequestResult custom(String url, String method) throws MalformedURLException, ProtocolException, IOException {
+        return custom(url, method, "", new noAuth());
+    }
+
+    /**
+     *
+     * @param url
+     * @param method
+     * @param auth
+     * @return
+     * @throws MalformedURLException
+     * @throws ProtocolException
+     * @throws IOException
+     */
+    public static httpRequestResult custom(String url, String method, authentication auth) throws MalformedURLException, ProtocolException, IOException {
+        return custom(url, method, "", auth);
+    }
+
+    /**
+     *
+     * @param url
+     * @param method
+     * @param content
+     * @return
+     * @throws MalformedURLException
+     * @throws ProtocolException
+     * @throws IOException
+     */
+    public static httpRequestResult custom(String url, String method, String content) throws MalformedURLException, ProtocolException, IOException {
+        return custom(url, method, content, new noAuth());
+    }
+
+    /**
+     * führt eine benutzerdefinierte Anfrage aus (falls eine besondere
+     * Anfrageform benötigt wird)
+     *
+     * @param url     die Zieladresse
+     * @param method  die Aufrufmethode (sowas wie GET, POST, DELETE)
+     * @param content der Anfrageinhalt
+     * @param auth
+     * @return das Anfrageresultat
+     * @throws MalformedURLException
+     * @throws ProtocolException
+     * @throws IOException
+     */
+    public static httpRequestResult custom(String url, String method, String content, authentication auth) throws MalformedURLException, ProtocolException, IOException {
+        URL urlurl = new URL(url);
+        HttpURLConnection connection = (HttpURLConnection) urlurl.openConnection();
+        connection.setRequestMethod(method);
+        connection.setDoInput(true);
+        connection.setDoOutput(true);
+        connection.setUseCaches(false);
+        connection.setDefaultUseCaches(false);
+        // connection.setIfModifiedSince(0);
+        // connection.setRequestProperty("Cache-Control","no-cache");
+        connection.setRequestProperty("Content-Type",
+                "application/x-www-form-urlencoded");
+        
+        if (auth != null) {
+            auth.performAuth(connection);
+        }
+        
+        if (!"".equals(content)) {
+            connection.setRequestProperty("Content-Length", String.valueOf(content.length()));
+        }
+
+        // führt die Anfrage aus
+        OutputStreamWriter writer = null;
+        httpRequestResult Result;
+        try {
+            if (!"".equals(content)) {
+                writer = new OutputStreamWriter(connection.getOutputStream());
+                writer.write(content);
+                writer.flush();
+            }
+        } finally {
+            Result = new httpRequestResult();
+            Result.setStatus(connection.getResponseCode());
+            Result.setHeaders(connection.getHeaderFields());
+            // Result.setContent((String) connection.getContent());
+            InputStream stream = connection.getErrorStream();
+            if (stream == null) {
+                try {
+                    stream = connection.getInputStream();
+                } catch (IOException e) {
+                    stream = null;
+                }
+            }
+            
+            if (stream != null) {
+                // This is a try with resources, Java 7+ only
+                // If you use Java 6 or less, use a finally block instead
+                byte[] res = IOUtils.toByteArray(stream);
+                stream.close();
+                Result.setContent(res);
+            } else {
+                Result.setContent("".getBytes());
+            }
+            
+            Result.setMethod(method);
+            Result.setUrl(url);
+        }
+
+        // ab hier wird die Antwort zusammengebaut
+        if (writer != null) {
+            writer.close();
+        }
+        connection.disconnect();
+        
+        return Result;
+    }
+
+    /**
+     * führt eine DELETE-Anfrage aus
+     *
+     * @param url die Zieladresse
+     * @return das Anfrageresultat
+     * @throws Exception
+     */
+    public static httpRequestResult delete(String url) throws Exception {
+        return custom(url, "DELETE", "");
+    }
+
+    /**
+     *
+     * @param url
+     * @param auth
+     * @return
+     * @throws Exception
+     */
+    public static httpRequestResult delete(String url, authentication auth) throws Exception {
+        return custom(url, "DELETE", "", auth);
+    }
+
+    /**
      * führt eine GET-Anfrage aus
      *
      * @param url die Zieladresse
@@ -39,6 +198,17 @@ public class httpRequest {
      */
     public static httpRequestResult get(String url) throws Exception {
         return custom(url, "GET", "");
+    }
+
+    /**
+     *
+     * @param url
+     * @param auth
+     * @return
+     * @throws Exception
+     */
+    public static httpRequestResult get(String url, authentication auth) throws Exception {
+        return custom(url, "GET", "", auth);
     }
 
     /**
@@ -54,6 +224,18 @@ public class httpRequest {
     }
 
     /**
+     *
+     * @param url
+     * @param content
+     * @param auth
+     * @return
+     * @throws Exception
+     */
+    public static httpRequestResult post(String url, String content, authentication auth) throws Exception {
+        return custom(url, "POST", content, auth);
+    }
+
+    /**
      * führt eine PUT-Anfrage aus
      *
      * @param url     die Zieladresse
@@ -66,101 +248,15 @@ public class httpRequest {
     }
 
     /**
-     * führt eine DELETE-Anfrage aus
      *
-     * @param url die Zieladresse
-     * @return das Anfrageresultat
+     * @param url
+     * @param content
+     * @param auth
+     * @return
      * @throws Exception
      */
-    public static httpRequestResult delete(String url) throws Exception {
-        return custom(url, "DELETE", "");
+    public static httpRequestResult put(String url, String content, authentication auth) throws Exception {
+        return custom(url, "PUT", content, auth);
     }
     
-    /**
-     *
-     * @param input
-     * @return
-     * @throws IOException
-     */
-    public static String read(InputStream input) throws IOException {
-        try (BufferedReader buffer = new BufferedReader(new InputStreamReader(input))) {
-            return buffer.lines().collect(Collectors.joining("\\Z"));
-        }
-    }
-
-    /**
-     * führt eine benutzerdefinierte Anfrage aus (falls eine besondere
-     * Anfrageform benötigt wird)
-     *
-     * @param url     die Zieladresse
-     * @param method  die Aufrufmethode (sowas wie GET, POST, DELETE)
-     * @param content der Anfrageinhalt
-     * @return das Anfrageresultat
-     * @throws MalformedURLException
-     * @throws ProtocolException
-     * @throws IOException
-     */
-    public static httpRequestResult custom(String url, String method, String content) throws MalformedURLException, ProtocolException, IOException {
-        URL urlurl = new URL(url);
-        HttpURLConnection connection = (HttpURLConnection) urlurl.openConnection();
-        connection.setRequestMethod(method);
-        connection.setDoInput(true);
-        connection.setDoOutput(true);
-        connection.setUseCaches(false);
-        connection.setDefaultUseCaches(false);
-       // connection.setIfModifiedSince(0);
-       // connection.setRequestProperty("Cache-Control","no-cache");
-        connection.setRequestProperty("Content-Type",
-                "application/x-www-form-urlencoded");
-
-        if (content != "") {
-            connection.setRequestProperty("Content-Length", String.valueOf(content.length()));
-        }
-
-        // führt die Anfrage aus
-        OutputStreamWriter writer = null;
-        httpRequestResult Result;
-        try {
-            if (content != "") {
-                writer = new OutputStreamWriter(connection.getOutputStream());
-                writer.write(content);
-                writer.flush();
-            }
-        } finally {
-            Result = new httpRequestResult();
-            Result.setStatus(connection.getResponseCode());
-            Result.setHeaders(connection.getHeaderFields());
-            // Result.setContent((String) connection.getContent());
-            InputStream stream = connection.getErrorStream();
-            if (stream == null) {
-                try {
-                    stream = connection.getInputStream();
-                } catch (Exception e) {
-                    stream = null;
-                }
-            }
-
-            if (stream != null) {
-                // This is a try with resources, Java 7+ only
-                // If you use Java 6 or less, use a finally block instead
-               byte[] res = IOUtils.toByteArray(stream);
-               stream.close();
-                Result.setContent(res);
-            } else {
-                Result.setContent("".getBytes());
-            }
-
-            Result.setMethod(method);
-            Result.setUrl(url);
-        }
-
-        // ab hier wird die Antwort zusammengebaut
-        if (writer != null) {
-            writer.close();
-        }
-        connection.disconnect();
-
-        return Result;
-    }
-
 }

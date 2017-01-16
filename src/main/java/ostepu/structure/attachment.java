@@ -27,7 +27,7 @@ public class attachment extends structure {
      */
     public static Object decode(String content) {
         JsonElement obj = new JsonParser().parse(String.join("", content));
-        if (obj == null) {
+        if (obj.isJsonNull()) {
             return null;
         }
         JsonObject newObj = obj.getAsJsonObject();

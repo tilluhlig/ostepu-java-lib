@@ -23,28 +23,6 @@ import org.apache.commons.io.IOUtils;
 public class fileCache {
 
     /**
-     * liefert den lokalen Pfad einer Datei
-     *
-     * @param context der Kontext des Servlet
-     * @param URL
-     * @return der Pfad (oder null, wenn sie nicht existert)
-     */
-    public static String getCachedFilePath(ServletContext context, String URL) {
-        // liefert einen lokalen Pfad oder null
-        String fileHash = DigestUtils.sha512Hex(URL);
-        String localFile = context.getRealPath("cache/" + fileHash);
-
-        try {
-            if (Files.exists(Paths.get(localFile))) {
-                return localFile;
-            }
-        } catch (Exception e) {
-            return null;
-        }
-        return null;
-    }
-
-    /**
      * sichert eine Datei lokal (unter dem Hash ihrer URL)
      *
      * @param context der Kontext des Servlet
@@ -65,13 +43,35 @@ public class fileCache {
             // do something
         }
     }
-    
+
     /**
      *
      * @param context
      */
-    public static void cleanCache(ServletContext context){
+    public static void cleanCache(ServletContext context) {
         // todo: muss implementiert werden
+    }
+
+    /**
+     * liefert den lokalen Pfad einer Datei
+     *
+     * @param context der Kontext des Servlet
+     * @param URL
+     * @return der Pfad (oder null, wenn sie nicht existert)
+     */
+    public static String getCachedFilePath(ServletContext context, String URL) {
+        // liefert einen lokalen Pfad oder null
+        String fileHash = DigestUtils.sha512Hex(URL);
+        String localFile = context.getRealPath("cache/" + fileHash);
+
+        try {
+            if (Files.exists(Paths.get(localFile))) {
+                return localFile;
+            }
+        } catch (Exception e) {
+            return null;
+        }
+        return null;
     }
 
 }

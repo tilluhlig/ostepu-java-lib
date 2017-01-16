@@ -34,8 +34,11 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import ostepu.request.authentication;
+import ostepu.request.httpAuth;
 import ostepu.request.httpRequest;
 import ostepu.request.httpRequestResult;
+import ostepu.request.noAuth;
 import ostepu.structure.component;
 import ostepu.structure.link;
 
@@ -54,6 +57,9 @@ public class cconfig extends HttpServlet {
      */
     protected void doRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, Exception {
+
+        // lädt die Anmeldedaten (eventuell für eine httpAuth)
+        httpAuth.loadLocalAuthData(getServletContext());
 
         String servletPath = request.getServletPath();
         getServletContext().setAttribute("prefix", "process,course,link");
@@ -185,7 +191,7 @@ public class cconfig extends HttpServlet {
         if (content == null) {
             return null;
         }
-        
+
         for (link mylink : content.getLinks()) {
             if (mylink.getName().equals(linkName)) {
                 return mylink;
@@ -205,13 +211,28 @@ public class cconfig extends HttpServlet {
      * @throws Exception
      */
     public static httpRequestResult callLinkByName(component mycomponent, String linkName, String URI, String method, String content) throws Exception {
+        return callLinkByName(mycomponent, linkName, URI, method, content, new noAuth());
+    }
+
+    /**
+     *
+     * @param mycomponent
+     * @param linkName
+     * @param URI
+     * @param method
+     * @param content
+     * @param auth
+     * @return
+     * @throws Exception
+     */
+    public static httpRequestResult callLinkByName(component mycomponent, String linkName, String URI, String method, String content, authentication auth) throws Exception {
         link linkObject = getLink(mycomponent, linkName);
         if (linkObject.getAddress() == null) {
             return null;
         }
 
-        System.out.println(linkObject.getAddress() + URI);
-        return httpRequest.custom(linkObject.getAddress() + URI, method, content);
+        //System.out.println(linkObject.getAddress() + URI);
+        return httpRequest.custom(linkObject.getAddress() + URI, method, content, auth);
     }
 
     /**
@@ -224,6 +245,20 @@ public class cconfig extends HttpServlet {
      * @throws Exception
      */
     public static httpRequestResult callConstLink(JsonObject mycomponent, link linkObject, String content, Map<String, String> placeholder) throws Exception {
+        return callConstLink(mycomponent, linkObject, content, placeholder, new noAuth());
+    }
+
+    /**
+     *
+     * @param mycomponent
+     * @param linkObject
+     * @param content
+     * @param placeholder
+     * @param auth
+     * @return
+     * @throws Exception
+     */
+    public static httpRequestResult callConstLink(JsonObject mycomponent, link linkObject, String content, Map<String, String> placeholder, authentication auth) throws Exception {
         if (mycomponent.has("links")) {
             JsonArray linkList = mycomponent.get("links").getAsJsonArray();
             for (JsonElement mylink : linkList) {
@@ -248,7 +283,7 @@ public class cconfig extends HttpServlet {
                                     }
 
                                     ///System.out.println(linkObject.getAddress() + path);
-                                    return httpRequest.custom(linkObject.getAddress() + path, method, content);
+                                    return httpRequest.custom(linkObject.getAddress() + path, method, content, auth);
                                 }
                             }
                         }

@@ -18,13 +18,13 @@ public class file extends structure {
     private String fileId = null;
     private String displayName = null;
     private String address = null;
-    private String timestamp = null;
+    private String timeStamp = null;
     private String fileSize = null;
     private String hash = null;
-    private String body = null;
+    private Object body = null;
     private String comment = null;
     private String mimeType = null;
-    
+
     /**
      *
      * @param content
@@ -63,10 +63,17 @@ public class file extends structure {
         fileId = handleStringEntry(content, "fileId", fileId);
         displayName = handleStringEntry(content, "displayName", displayName);
         address = handleStringEntry(content, "address", address);
-        timestamp = handleStringEntry(content, "timestamp", timestamp);
+        timeStamp = handleStringEntry(content, "timeStamp", timeStamp);
         fileSize = handleStringEntry(content, "fileSize", fileSize);
         hash = handleStringEntry(content, "hash", hash);
-        body = handleStringEntry(content, "body", body);
+        if (content.has("body")) {
+            if (content.isJsonPrimitive()) {
+                body = (Object) content.get("body").getAsString();
+            } else {
+                JsonObject rawReference = content.get("body").getAsJsonObject();
+                body = (Object) new reference(rawReference);
+            }
+        }
         comment = handleStringEntry(content, "comment", comment);
         mimeType = handleStringEntry(content, "mimeType", mimeType);
 
@@ -82,7 +89,7 @@ public class file extends structure {
         addIfSet(tmp, "fileId", fileId);
         addIfSet(tmp, "displayName", displayName);
         addIfSet(tmp, "address", address);
-        addIfSet(tmp, "timestamp", timestamp);
+        addIfSet(tmp, "timeStamp", timeStamp);
         addIfSet(tmp, "fileSize", fileSize);
         addIfSet(tmp, "hash", hash);
         addIfSet(tmp, "body", body);
@@ -134,17 +141,17 @@ public class file extends structure {
     }
 
     /**
-     * @return the timestamp
+     * @return the timeStamp
      */
     public String getTimestamp() {
-        return timestamp;
+        return timeStamp;
     }
 
     /**
-     * @param timestamp the timestamp to set
+     * @param timestamp the timeStamp to set
      */
     public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
+        this.timeStamp = timestamp;
     }
 
     /**
@@ -178,14 +185,14 @@ public class file extends structure {
     /**
      * @return the body
      */
-    public String getBody() {
+    public Object getBody() {
         return body;
     }
 
     /**
      * @param body the body to set
      */
-    public void setBody(String body) {
+    public void setBody(Object body) {
         this.body = body;
     }
 

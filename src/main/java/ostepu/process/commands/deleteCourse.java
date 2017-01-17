@@ -24,7 +24,7 @@ public class deleteCourse implements command {
             throws ServletException, IOException {
         PrintWriter out = response.getWriter();
 
-        // ausfüllen
+        // Todo: ausfüllen
         response.setStatus(201);
     }
 

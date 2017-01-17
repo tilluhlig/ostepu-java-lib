@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import ostepu.cconfig.cconfig;
 import ostepu.process.command;
+import ostepu.request.httpAuth;
 import ostepu.request.httpRequestResult;
 import ostepu.structure.component;
 import ostepu.structure.course;
@@ -50,7 +51,7 @@ public class postCourse implements command {
         String courseid = courseObject.getId();
         String componentid = conf.getId();
         
-        httpRequestResult result = cconfig.callConstLink(mycomponent, postProcess, "[{\"exercise\":{\"courseId\":\""+courseid+"\"},\"target\":{\"id\":\""+componentid+"\"}}]", null);
+        httpRequestResult result = cconfig.callConstLink(mycomponent, postProcess, "[{\"exercise\":{\"courseId\":\""+courseid+"\"},\"target\":{\"id\":\""+componentid+"\"}}]", null, new httpAuth());
         
         if (result.getStatus() != 201){
             response.sendError(500, "sign up has failed");

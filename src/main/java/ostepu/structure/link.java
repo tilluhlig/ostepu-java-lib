@@ -77,7 +77,16 @@ public class link extends structure {
      */
     @Override
     public String encode() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        JsonObject tmp = new JsonObject();
+        addIfSet(tmp, "id", id);
+        addIfSet(tmp, "name", name);
+        addIfSet(tmp, "target", target);
+        addIfSet(tmp, "prefix", prefix);
+        addIfSet(tmp, "priority", priority);
+        addIfSet(tmp, "owner", owner);
+        addIfSet(tmp, "relevanz", relevanz);
+        addIfSet(tmp, "targetName", targetName);
+        return tmp.toString();
     }
 
     /**

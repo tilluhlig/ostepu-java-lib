@@ -33,6 +33,17 @@ public class fileCache {
         String fileHash = DigestUtils.sha512Hex(URL);
         String localFile = context.getRealPath("cache/" + fileHash);
 
+        File folder = new File(context.getRealPath("cache"));
+
+        if (!folder.exists()) {
+            // wenn der Ordner nicht existert, versuchen wir ihn anzulegen
+            boolean succeeded = folder.mkdir();
+            if (!succeeded) {
+                // wenn wir den Ordner nicht anlegen konnten, bringt das cachen nichts
+                return;
+            }
+        }
+
         try {
             if (!Files.exists(Paths.get(localFile))) {
                 OutputStream outputStream = new FileOutputStream(new File(localFile));
@@ -49,7 +60,11 @@ public class fileCache {
      * @param context
      */
     public static void cleanCache(ServletContext context) {
-        // todo: muss implementiert werden
+        File folder = new File(context.getRealPath("cache"));
+        if (folder.exists() && folder.isDirectory()) {
+            // Todo: muss einzeln rekursiv gelöscht werden?
+            folder.delete();
+        }
     }
 
     /**

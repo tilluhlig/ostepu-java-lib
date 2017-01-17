@@ -103,7 +103,14 @@ public class component extends structure {
      */
     @Override
     public String encode() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        JsonObject tmp = new JsonObject();
+        addIfSet(tmp, "id", id);
+        addIfSet(tmp, "name", name);
+        addIfSet(tmp, "address", address);
+        addIfSet(tmp, "option", option);
+        addIfSet(tmp, "prefix", prefix);
+        //addIfSet(tmp, "links", accepted);
+        return tmp.toString();
     }
 
     /**

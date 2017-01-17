@@ -73,7 +73,7 @@ public class course extends structure {
         addIfSet(tmp, "name", name);
         addIfSet(tmp, "semester", semester);
         addIfSet(tmp, "defaultGroupSize", defaultGroupSize);
-        
+
         tmp = merge(tmp, super.encodeToObject());
         return tmp.toString();
     }

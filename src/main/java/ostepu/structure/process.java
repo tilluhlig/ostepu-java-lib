@@ -89,14 +89,14 @@ public class process extends structure {
         if (content.has("attachment")) {
             attachment = new ArrayList<>();
             JsonArray rawAttachment = content.get("attachment").getAsJsonArray();
-            for(JsonElement a: rawAttachment){
+            for (JsonElement a : rawAttachment) {
                 attachment.add(new attachment(a.getAsJsonObject()));
             }
         }
         if (content.has("workFiles")) {
             workFiles = new ArrayList<>();
             JsonArray rawworkFiles = content.get("workFiles").getAsJsonArray();
-            for(JsonElement a: rawworkFiles){
+            for (JsonElement a : rawworkFiles) {
                 workFiles.add(new attachment(a.getAsJsonObject()));
             }
         }

@@ -20,6 +20,7 @@ import ostepu.cconfig.cconfig;
 import static ostepu.cconfig.cconfig.loadComponent;
 import ostepu.cconfig.control;
 import ostepu.process.command;
+import ostepu.request.httpAuth;
 import ostepu.request.httpRequestResult;
 import ostepu.structure.component;
 import ostepu.structure.link;
@@ -51,7 +52,7 @@ public class getCourseExists implements command{
         placeholder.put("courseid", courseid);
         placeholder.put("componentid", componentid);
         
-        httpRequestResult result = cconfig.callConstLink(mycomponent, getProcess, "", placeholder);
+        httpRequestResult result = cconfig.callConstLink(mycomponent, getProcess, "", placeholder, new httpAuth());
 
         if (result.getStatus() == 200){
             response.setStatus(200);

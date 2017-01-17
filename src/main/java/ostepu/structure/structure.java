@@ -41,6 +41,16 @@ abstract public class structure {
             target.addProperty(elementName, element);
         }
     }
+    
+        protected final void addIfSet(JsonObject target, String elementName, Object element) {
+        if (element != null) {
+            if (element.getClass() == String.class){
+                addIfSet(target, elementName, (String) element);
+            } else {
+                addIfSet(target, elementName, (structure) element);                
+            }
+        }
+    }
 
     /**
      *
@@ -50,7 +60,8 @@ abstract public class structure {
      */
     protected final void addIfSet(JsonObject target, String elementName, structure element) {
         if (element != null) {
-            JsonElement obj = new JsonParser().parse(String.join("", element.encode()));
+            String enc = element.encode();
+            JsonElement obj = new JsonParser().parse(String.join("", enc));
             if (obj.getAsJsonObject().size() > 0) {
                 target.add(elementName, obj);
             }

@@ -8,6 +8,9 @@ package ostepu.file;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Base64;
+import java.util.Base64.Decoder;
+import java.util.Base64.Encoder;
 import javax.servlet.ServletContext;
 import org.apache.commons.io.IOUtils;
 import ostepu.cconfig.cconfig;
@@ -15,6 +18,8 @@ import ostepu.request.authentication;
 import ostepu.request.httpRequestResult;
 import ostepu.request.noAuth;
 import ostepu.structure.component;
+import ostepu.structure.file;
+import ostepu.structure.reference;
 
 /**
  * Diese Klasse enthält Methoden für den Umgang mit Dateien zwischen OSTEPU und
@@ -23,6 +28,90 @@ import ostepu.structure.component;
  * @author Till Uhlig <till.uhlig@student.uni-halle.de>
  */
 public class fileUtils {
+
+    /**
+     * liefert den Inhalt einer Datei, welches sich hinter dem file-Object
+     * befindet
+     *
+     * @param context    der Kontext des Servlet
+     * @param fileObject das Dateiobjekt
+     * @param useCache   ob die Datei lokal gespeichert und abgefragt werden
+     *                   soll (true = nutze Cache, false = sonst)
+     * @return der Inhalt der Datei
+     * @throws IOException
+     * @throws Exception
+     */
+    public static byte[] getFile(ServletContext context, file fileObject, boolean useCache) throws IOException, Exception {
+        return getFile(context, fileObject, useCache, new noAuth());
+    }
+
+    /**
+     * liefert den Inhalt einer Datei, welches sich hinter dem file-Object
+     * befindet
+     *
+     * @param context    der Kontext des Servlet
+     * @param fileObject das Dateiobjekt
+     * @return der Inhalt der Datei
+     * @throws IOException
+     * @throws Exception
+     */
+    public static byte[] getFile(ServletContext context, file fileObject) throws IOException, Exception {
+        return getFile(context, fileObject, true, new noAuth());
+    }
+
+    /**
+     * liefert den Inhalt einer Datei, welches sich hinter dem file-Object
+     * befindet
+     *
+     * @param context    der Kontext des Servlet
+     * @param fileObject das Dateiobjekt
+     * @param auth       die Authentifizierungsdaten
+     * @return der Inhalt der Datei
+     * @throws IOException
+     * @throws Exception
+     */
+    public static byte[] getFile(ServletContext context, file fileObject, authentication auth) throws IOException, Exception {
+        return getFile(context, fileObject, true, auth);
+    }
+
+    /**
+     * liefert den Inhalt einer Datei, welches sich hinter dem file-Object
+     * befindet
+     *
+     * @param context    der Kontext des Servlet
+     * @param fileObject das Dateiobjekt
+     * @param useCache   ob die Datei lokal gespeichert und abgefragt werden
+     *                   soll (true = nutze Cache, false = sonst)
+     * @param auth       die Authentifizierungsdaten
+     * @return der Inhalt der Datei
+     * @throws IOException
+     * @throws Exception
+     */
+    public static byte[] getFile(ServletContext context, file fileObject, boolean useCache, authentication auth) throws IOException, Exception {
+        if (fileObject.getAddress() != null) {
+            // das Dateiobjekt hat eine normale Adresse
+            return getFile(context, fileObject.getAddress());
+        } else {
+            if (fileObject.getBody() != null) {
+                Object body = fileObject.getBody();
+                if (body.getClass() == String.class) {
+                    // es ist ein base64 inhalt
+                    Decoder dec = Base64.getDecoder();
+                    return dec.decode((String) body);
+                } else {
+                    // es ist eine Referenz
+                    reference ref = (reference) body;
+                    if (ref.getGlobalRef() != null) {
+                        // es gibt eine globale Adresse, welche wir verwenden können
+                        return getFile(context, ref.getGlobalRef(), useCache, auth);
+                    }
+                    // wenn es keine gültige globale Adresse gibt, dann können
+                    // wir hier nichts weiter machen
+                }
+            }
+        }
+        return null;
+    }
 
     /**
      * liefert den Inhalt einer Datei, welche sich hinter URL befindet
@@ -38,11 +127,12 @@ public class fileUtils {
     }
 
     /**
+     * liefert den Inhalt einer Datei, welche sich hinter URL befindet
      *
-     * @param context
-     * @param URL
-     * @param auth
-     * @return
+     * @param context der Kontext des Servlet
+     * @param URL     die Addresse der Datei
+     * @param auth    die Authentifizierungsdaten
+     * @return der Inhalt der Datei
      * @throws IOException
      * @throws Exception
      */
@@ -72,7 +162,7 @@ public class fileUtils {
      * @param URL      die Addresse der Datei
      * @param useCache ob die Datei lokal gespeichert und abgefragt werden soll
      *                 (true = nutze Cache, false = sonst)
-     * @param auth
+     * @param auth     die Authentifizierungsdaten
      * @return der Inhalt der Datei
      * @throws IOException
      * @throws Exception

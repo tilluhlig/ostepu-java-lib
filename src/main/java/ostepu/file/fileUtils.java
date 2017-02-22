@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Till Uhlig <till.uhlig@student.uni-halle.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,6 +22,8 @@ import java.io.InputStream;
 import java.util.Base64;
 import java.util.Base64.Decoder;
 import java.util.Base64.Encoder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import org.apache.commons.io.IOUtils;
 import ostepu.cconfig.cconfig;
@@ -52,7 +54,7 @@ public class fileUtils {
      * @throws IOException
      * @throws Exception
      */
-    public static byte[] getFile(ServletContext context, file fileObject, boolean useCache) throws IOException, Exception {
+    public static byte[] getFile(ServletContext context, file fileObject, boolean useCache) {
         return getFile(context, fileObject, useCache, new noAuth());
     }
 
@@ -66,7 +68,7 @@ public class fileUtils {
      * @throws IOException
      * @throws Exception
      */
-    public static byte[] getFile(ServletContext context, file fileObject) throws IOException, Exception {
+    public static byte[] getFile(ServletContext context, file fileObject) {
         return getFile(context, fileObject, true, new noAuth());
     }
 
@@ -81,7 +83,7 @@ public class fileUtils {
      * @throws IOException
      * @throws Exception
      */
-    public static byte[] getFile(ServletContext context, file fileObject, authentication auth) throws IOException, Exception {
+    public static byte[] getFile(ServletContext context, file fileObject, authentication auth) {
         return getFile(context, fileObject, true, auth);
     }
 
@@ -98,10 +100,10 @@ public class fileUtils {
      * @throws IOException
      * @throws Exception
      */
-    public static byte[] getFile(ServletContext context, file fileObject, boolean useCache, authentication auth) throws IOException, Exception {
+    public static byte[] getFile(ServletContext context, file fileObject, boolean useCache, authentication auth) {
         if (fileObject.getAddress() != null) {
             // das Dateiobjekt hat eine normale Adresse
-            return getFile(context, fileObject.getAddress());
+            return getFile(context, "/" + fileObject.getAddress() + "/" + fileObject.getDisplayName(), useCache, auth);
         } else {
             if (fileObject.getBody() != null) {
                 Object body = fileObject.getBody();
@@ -114,7 +116,7 @@ public class fileUtils {
                     reference ref = (reference) body;
                     if (ref.getGlobalRef() != null) {
                         // es gibt eine globale Adresse, welche wir verwenden können
-                        return getFile(context, ref.getGlobalRef(), useCache, auth);
+                        return getFile(context, "/" + ref.getGlobalRef() + "/" + fileObject.getDisplayName(), useCache, auth);
                     }
                     // wenn es keine gültige globale Adresse gibt, dann können
                     // wir hier nichts weiter machen
@@ -133,7 +135,7 @@ public class fileUtils {
      * @throws IOException
      * @throws Exception
      */
-    public static byte[] getFile(ServletContext context, String URL) throws IOException, Exception {
+    public static byte[] getFile(ServletContext context, String URL) {
         return getFile(context, URL, true, new noAuth());
     }
 
@@ -147,7 +149,7 @@ public class fileUtils {
      * @throws IOException
      * @throws Exception
      */
-    public static byte[] getFile(ServletContext context, String URL, authentication auth) throws IOException, Exception {
+    public static byte[] getFile(ServletContext context, String URL, authentication auth) {
         return getFile(context, URL, true, auth);
     }
 
@@ -161,7 +163,7 @@ public class fileUtils {
      * @throws IOException
      * @throws Exception
      */
-    public static byte[] getFile(ServletContext context, String URL, boolean useCache) throws IOException, Exception {
+    public static byte[] getFile(ServletContext context, String URL, boolean useCache) {
         return getFile(context, URL, useCache, new noAuth());
     }
 
@@ -178,7 +180,7 @@ public class fileUtils {
      * @throws IOException
      * @throws Exception
      */
-    public static byte[] getFile(ServletContext context, String URL, boolean useCache, authentication auth) throws IOException, Exception {
+    public static byte[] getFile(ServletContext context, String URL, boolean useCache, authentication auth) {
         String filePath = null;
 
         if (useCache) {
@@ -186,22 +188,47 @@ public class fileUtils {
         }
 
         if (filePath != null) {
-            // die Datei existiert bereits lokal, also können wir diese nutzen
-            InputStream inp = new FileInputStream(filePath);
-            byte[] res = IOUtils.toByteArray(inp);
-            inp.close();
-            return res;
-        } else {
-            // die Datei muss beim Zielsystem abgerufen werden
-            component conf = cconfig.loadConfig(context);
-            httpRequestResult result = cconfig.callLinkByName(conf, "getFile", URL, "GET", "", auth);
-
-            // nun soll die Datei bei uns zwischengespeichert werden
-            if (useCache) {
-                fileCache.cacheFile(context, result.getContent(), URL);
+            try {
+                // die Datei existiert bereits lokal, also können wir diese nutzen
+                InputStream inp = new FileInputStream(filePath);
+                byte[] res = IOUtils.toByteArray(inp);
+                inp.close();
+                return res;
+            } catch (IOException ex) {
+                Logger.getLogger(fileUtils.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
             }
+        } else {
+            try {
+                // die Datei muss beim Zielsystem abgerufen werden
+                component conf = cconfig.loadConfig(context);
+                httpRequestResult result = cconfig.callLinkByName(conf, "getFile", URL, "GET", "", auth);
 
-            return result.getContent();
+                if (result.getStatus() == 401) {
+                    // der Zugang wurde verweigert
+                    Logger.getLogger(fileUtils.class.getName()).log(Level.SEVERE, "Zugang verweigert");
+                    return null;
+                }
+
+                if (result.getStatus() != 200) {
+                    // es gab einen Fehler beim Abrufen
+                    Logger.getLogger(fileUtils.class.getName()).log(Level.SEVERE, "Datei konnte nicht abgerufen werden");
+                    return null;
+                }
+
+                // nun soll die Datei bei uns zwischengespeichert werden
+                if (useCache) {
+                    fileCache.cacheFile(context, result.getContent(), URL);
+                }
+
+                return result.getContent();
+            } catch (IOException ex) {
+                Logger.getLogger(fileUtils.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
+            } catch (Exception ex) {
+                Logger.getLogger(fileUtils.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
+            }
         }
     }
 

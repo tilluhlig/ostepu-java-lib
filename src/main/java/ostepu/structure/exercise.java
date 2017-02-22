@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Till Uhlig <till.uhlig@student.uni-halle.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,21 +26,22 @@ import com.google.gson.JsonParser;
  */
 public class exercise extends structure {
 
-    private String id=null;
-    private String courseId=null;
-    private String sheetId=null;
-    private String maxPoints=null;
-    private String type=null;
-    private String link=null;
-    private String bonus=null;
-    private String linkName=null;
-    private String submittable=null;
-    private String resultVisibility=null;
+    private String id = null;
+    private String courseId = null;
+    private String sheetId = null;
+    private String maxPoints = null;
+    private String type = null;
+    private String link = null;
+    private String bonus = null;
+    private String linkName = null;
+    private String submittable = null;
+    private String resultVisibility = null;
 
     /**
+     * wandelt eine Textdarstellung in ein Objekt um
      *
-     * @param content
-     * @return
+     * @param content die Texteingabe
+     * @return das Objekt
      */
     public static Object decode(String content) {
         JsonElement obj = new JsonParser().parse(String.join("", content));
@@ -52,9 +53,10 @@ public class exercise extends structure {
     }
 
     /**
+     * wandelt eine Textdarstellung in ein Objekt um
      *
-     * @param content
-     * @return
+     * @param content als JSON Objekt (Eingabe)
+     * @return das Objekt
      */
     public static Object decode(JsonObject content) {
         return new exercise(content);
@@ -101,6 +103,7 @@ public class exercise extends structure {
         addIfSet(tmp, "linkName", linkName);
         addIfSet(tmp, "submittable", submittable);
         addIfSet(tmp, "resultVisibility", resultVisibility);
+        tmp = super.encodeToObject(tmp);
         return tmp.toString();
     }
 
@@ -243,6 +246,5 @@ public class exercise extends structure {
     public void setResultVisibility(String resultVisibility) {
         this.resultVisibility = resultVisibility;
     }
-
 
 }

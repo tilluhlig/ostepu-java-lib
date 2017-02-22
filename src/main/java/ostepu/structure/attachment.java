@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Till Uhlig <till.uhlig@student.uni-halle.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,15 +26,15 @@ import com.google.gson.JsonParser;
  */
 public class attachment extends structure {
 
-    private String id=null;
-    private String exerciseId=null;
-    private file file=null;
-    private String processId=null;
-    
+    private String id = null;
+    private String exerciseId = null;
+    private file file = null;
+    private String processId = null;
+
     /**
-     *
-     * @param content
-     * @return
+     * wandelt eine Textdarstellung in ein Objekt um
+     * @param content die Texteingabe
+     * @return das Objekt
      */
     public static Object decode(String content) {
         JsonElement obj = new JsonParser().parse(String.join("", content));
@@ -46,9 +46,10 @@ public class attachment extends structure {
     }
 
     /**
+     * wandelt eine Textdarstellung in ein Objekt um
      *
-     * @param content
-     * @return
+     * @param content als JSON Objekt (Eingabe)
+     * @return das Objekt
      */
     public static Object decode(JsonObject content) {
         return new attachment(content);
@@ -76,8 +77,8 @@ public class attachment extends structure {
     }
 
     /**
-     *
-     * @return
+     * wandelt das Objekt in eine Textdarstelung um
+     * @return die Textdarstellung des Anhangs
      */
     @Override
     public String encode() {
@@ -86,6 +87,7 @@ public class attachment extends structure {
         addIfSet(tmp, "exerciseId", exerciseId);
         addIfSet(tmp, "file", file);
         addIfSet(tmp, "processId", processId);
+        tmp = super.encodeToObject(tmp);
         return tmp.toString();
     }
 

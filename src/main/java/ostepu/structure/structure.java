@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Till Uhlig <till.uhlig@student.uni-halle.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -52,13 +52,13 @@ abstract public class structure {
             target.addProperty(elementName, element);
         }
     }
-    
-        protected final void addIfSet(JsonObject target, String elementName, Object element) {
+
+    protected final void addIfSet(JsonObject target, String elementName, Object element) {
         if (element != null) {
-            if (element.getClass() == String.class){
+            if (element.getClass() == String.class) {
                 addIfSet(target, elementName, (String) element);
             } else {
-                addIfSet(target, elementName, (structure) element);                
+                addIfSet(target, elementName, (structure) element);
             }
         }
     }
@@ -108,18 +108,20 @@ abstract public class structure {
     }
 
     /**
+     * wandelt eine Textdarstellung in ein Objekt um
      *
-     * @param content
-     * @return
+     * @param content die Texteingabe
+     * @return das Objekt
      */
     protected static Object decode(String content) {
         return null;
     }
 
     /**
+     * wandelt eine Textdarstellung in ein Objekt um
      *
-     * @param content
-     * @return
+     * @param content als JSON Objekt (Eingabe)
+     * @return das Objekt
      */
     protected static Object decode(JsonObject content) {
         return null;
@@ -156,12 +158,15 @@ abstract public class structure {
      * @return
      */
     public JsonObject encodeToObject() {
-        JsonObject tmp = new JsonObject();
-        addIfSet(tmp, "sender", getSender());
-        addIfSet(tmp, "status", getStatus());
-        addIfSet(tmp, "messages", getMessages());
-        addIfSet(tmp, "structure", getStructure());
-        return tmp;
+        return encodeToObject(new JsonObject());
+    }
+
+    public JsonObject encodeToObject(JsonObject object) {
+        addIfSet(object, "sender", getSender());
+        addIfSet(object, "status", getStatus());
+        addIfSet(object, "messages", getMessages());
+        addIfSet(object, "structure", getStructure());
+        return object;
     }
 
     private String sender;

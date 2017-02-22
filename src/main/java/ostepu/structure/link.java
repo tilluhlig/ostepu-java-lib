@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Till Uhlig <till.uhlig@student.uni-halle.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -37,9 +37,10 @@ public class link extends structure {
     private String targetName = null;
 
     /**
+     * wandelt eine Textdarstellung in ein Objekt um
      *
-     * @param content
-     * @return
+     * @param content die Texteingabe
+     * @return das Objekt
      */
     public static Object decode(String content) {
         JsonElement obj = new JsonParser().parse(String.join("", content));
@@ -51,9 +52,10 @@ public class link extends structure {
     }
 
     /**
+     * wandelt eine Textdarstellung in ein Objekt um
      *
-     * @param content
-     * @return
+     * @param content als JSON Objekt (Eingabe)
+     * @return das Objekt
      */
     public static Object decode(JsonObject content) {
         return new link(content);
@@ -97,6 +99,7 @@ public class link extends structure {
         addIfSet(tmp, "owner", owner);
         addIfSet(tmp, "relevanz", relevanz);
         addIfSet(tmp, "targetName", targetName);
+        tmp = super.encodeToObject(tmp);
         return tmp.toString();
     }
 

@@ -253,4 +253,11 @@ public class marking extends structure {
         this.hideFile = hideFile;
     }
 
+    public static final String NICHT_ZUGEWIESEN_STATUS = "-1";
+    public static final String NICHT_EINGESENDET_STATUS = "0";
+    public static final String UNKORRIGIERT_STATUS = "1";
+    public static final String VORLAEUFIG_STATUS = "2";
+    public static final String KORRIGIERT_STATUS = "3";
+    public static final String AUTOMATISCH_STATUS = "4";
+
 }

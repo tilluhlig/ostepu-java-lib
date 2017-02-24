@@ -232,4 +232,15 @@ public class fileUtils {
         }
     }
 
+    public static String encodeBase64(String content) {
+        Encoder enc = Base64.getEncoder();
+        return new String(enc.encode(content.getBytes()));
+
+    }
+
+    public static String decodeBase64(String content) {
+        Decoder dec = Base64.getDecoder();
+        return new String(dec.decode(content));
+    }
+
 }

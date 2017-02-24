@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Till Uhlig <till.uhlig@student.uni-halle.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -242,7 +242,7 @@ public class cconfig extends HttpServlet {
             return null;
         }
 
-        //System.out.println(linkObject.getAddress() + URI);
+        // System.out.println(linkObject.getAddress() + URI);
         return httpRequest.custom(linkObject.getAddress() + URI, method, content, auth);
     }
 

@@ -162,16 +162,23 @@ abstract public class structure {
     }
 
     public JsonObject encodeToObject(JsonObject object) {
+        if (messages != null) {
+            JsonArray mess = new JsonArray();
+            for (String me : messages) {
+                mess.add(me);
+            }
+            object.add("messages", mess);
+        }
+
         addIfSet(object, "sender", getSender());
         addIfSet(object, "status", getStatus());
-        addIfSet(object, "messages", getMessages());
         addIfSet(object, "structure", getStructure());
         return object;
     }
 
     private String sender;
     private String status;
-    private String messages;
+    private String[] messages;
     private String structure;
     private String language;
 
@@ -206,14 +213,14 @@ abstract public class structure {
     /**
      * @return the messages
      */
-    public String getMessages() {
+    public String[] getMessages() {
         return messages;
     }
 
     /**
      * @param messages the messages to set
      */
-    public void setMessages(String messages) {
+    public void setMessages(String[] messages) {
         this.messages = messages;
     }
 

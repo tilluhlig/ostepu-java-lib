@@ -21,18 +21,35 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
+ * die Attachment-Struktur von OSTEPU
  *
  * @author Till Uhlig <till.uhlig@student.uni-halle.de>
  */
 public class attachment extends structure {
 
+    /*
+     * die ID des Anhangs
+     */
     private String id = null;
+
+    /*
+     * die Aufgabennummer
+     */
     private String exerciseId = null;
+
+    /*
+     * die zugehörige Datei
+     */
     private file file = null;
+
+    /*
+     * eine mögliche ProzessId (ein Eintrag in einer Process-Tabelle)
+     */
     private String processId = null;
 
     /**
      * wandelt eine Textdarstellung in ein Objekt um
+     *
      * @param content die Texteingabe
      * @return das Objekt
      */
@@ -77,8 +94,9 @@ public class attachment extends structure {
     }
 
     /**
-     * wandelt das Objekt in eine Textdarstelung um
-     * @return die Textdarstellung des Anhangs
+     * wandelt das Objekt in eine Textdarstelung um (JSON)
+     *
+     * @return die Textdarstellung des Anhangs (JSON)
      */
     @Override
     public String encode() {

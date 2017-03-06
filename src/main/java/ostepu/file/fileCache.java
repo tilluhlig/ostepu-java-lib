@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Till Uhlig <till.uhlig@student.uni-halle.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -20,14 +20,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletContext;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FileUtils;
 
 /**
+ * diese Klasse speichert und liefert Dateien
  *
  * @author Till Uhlig <till.uhlig@student.uni-halle.de>
  */
@@ -38,7 +40,7 @@ public class fileCache {
      *
      * @param context der Kontext des Servlet
      * @param content der Inhalt der Datei
-     * @param URL
+     * @param URL     der Pfad/URL der Datei, für den Namen
      */
     public static void cacheFile(ServletContext context, byte[] content, String URL) {
         String fileHash = DigestUtils.sha512Hex(URL);
@@ -67,14 +69,21 @@ public class fileCache {
     }
 
     /**
+     * entfernt alle gespeicherten Dateien
      *
-     * @param context
+     * @param context der Kontext des Servlet
      */
     public static void cleanCache(ServletContext context) {
         File folder = new File(context.getRealPath("cache"));
         if (folder.exists() && folder.isDirectory()) {
-            // Todo: muss einzeln rekursiv gelöscht werden?
-            folder.delete();
+            try {
+                FileUtils.deleteDirectory(folder);
+            } catch (IOException ex) {
+                Logger.getLogger(fileCache.class.getName()).log(Level.SEVERE, null, ex);
+                // wenn es nicht gelöscht werden kann, dann kann ich es auch
+                // nicht ändern
+                return;
+            }
         }
     }
 
@@ -82,7 +91,7 @@ public class fileCache {
      * liefert den lokalen Pfad einer Datei
      *
      * @param context der Kontext des Servlet
-     * @param URL
+     * @param URL     der Pfad/URL der Datei, für den Namen
      * @return der Pfad (oder null, wenn sie nicht existert)
      */
     public static String getCachedFilePath(ServletContext context, String URL) {
@@ -95,8 +104,10 @@ public class fileCache {
                 return localFile;
             }
         } catch (Exception e) {
+            // Datei konnte nicht gefunden werden
             return null;
         }
+        // Datei konnte nicht gefunden werden
         return null;
     }
 

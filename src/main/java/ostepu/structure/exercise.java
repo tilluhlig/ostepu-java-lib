@@ -21,20 +21,64 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
+ * die Exercise-Struktur von OSTEPU
  *
  * @author Till Uhlig <till.uhlig@student.uni-halle.de>
  */
 public class exercise extends structure {
 
+    /*
+     * die ID der Aufgabe
+     */
     private String id = null;
+
+    /*
+     * die ID der Veranstaltung
+     */
     private String courseId = null;
+
+    /*
+     * die ID der Übungsserie
+     */
     private String sheetId = null;
+
+    /*
+     * die Maximalpunktzahl
+     */
     private String maxPoints = null;
+
+    /*
+     * die ID des Aufgabentyps
+     */
     private String type = null;
+
+    /*
+     * gibt die Hauptaufgabe an (dient der Aufgabenreihenfolge) Bsp.: 1 ist dann
+     * Aufgabe 1
+     */
     private String link = null;
+
+    /*
+     * true = Bonusaufgabe, false = sonst
+     */
     private String bonus = null;
+
+    /*
+     * dient der Aufgabenreihenfolge und der Nummerierung (gibt die Position in
+     * der Hauptaufgabe an) Bsp. link=4 bedeutet Unteraufgabe c
+     */
     private String linkName = null;
+
+    /*
+     * ob bei dieser Aufgabe etwas eingesendet werden kann true = ja, false =
+     * nein
+     */
     private String submittable = null;
+
+    /*
+     * ob die Korrekturdatei noch vor Ablauf des Übungszeitraums sichtbar ist
+     * (für den Studenten) true = ja, false = nein
+     */
     private String resultVisibility = null;
 
     /**
@@ -63,15 +107,16 @@ public class exercise extends structure {
     }
 
     /**
-     *
+     * der Standardkonstruktor
      */
     public exercise() {
-
+        // kein Inhalt
     }
 
     /**
+     * initialisiert das Objekt anhand eines JSON-Objekts
      *
-     * @param content
+     * @param content der zukünftige Inhalt
      */
     public exercise(JsonObject content) {
         id = handleStringEntry(content, "id", id);
@@ -87,8 +132,9 @@ public class exercise extends structure {
     }
 
     /**
+     * wandelt das Objekt in eine Textdarstellung um (JSON)
      *
-     * @return
+     * @return die Textdarstellung (als JSON)
      */
     @Override
     public String encode() {

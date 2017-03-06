@@ -23,16 +23,18 @@ import com.google.gson.JsonParser;
 import java.util.Map;
 
 /**
+ * die Basisstruktur von OSTEPU
  *
  * @author Till Uhlig <till.uhlig@student.uni-halle.de>
  */
 abstract public class structure {
 
     /**
+     * die Attribute zweier JSON-Objekte werden vereint
      *
-     * @param target
-     * @param source
-     * @return
+     * @param target das Zielobjekt
+     * @param source das Quellobjekt
+     * @return das Zielobjekt mit den hinzugefügten Attributen
      */
     protected final JsonObject merge(JsonObject target, JsonObject source) {
         for (Map.Entry a : source.entrySet()) {
@@ -42,10 +44,11 @@ abstract public class structure {
     }
 
     /**
+     * setzt elementName in target, wenn element nicht null ist
      *
-     * @param target
-     * @param elementName
-     * @param element
+     * @param target      das Zielobjekt
+     * @param elementName der Schlüssel des Attributs
+     * @param element     der Wert des Attributs
      */
     protected final void addIfSet(JsonObject target, String elementName, String element) {
         if (element != null) {
@@ -53,6 +56,13 @@ abstract public class structure {
         }
     }
 
+    /**
+     * setzt elementName in target, wenn element nicht null ist
+     *
+     * @param target      das Zielobjekt
+     * @param elementName der Schlüssel des Attributs
+     * @param element     der Wert des Attributs
+     */
     protected final void addIfSet(JsonObject target, String elementName, Object element) {
         if (element != null) {
             if (element.getClass() == String.class) {
@@ -64,10 +74,11 @@ abstract public class structure {
     }
 
     /**
+     * setzt elementName in target, wenn element nicht null ist
      *
-     * @param target
-     * @param elementName
-     * @param element
+     * @param target      das Zielobjekt
+     * @param elementName der Schlüssel des Attributs
+     * @param element     der Wert des Attributs
      */
     protected final void addIfSet(JsonObject target, String elementName, structure element) {
         if (element != null) {
@@ -80,11 +91,12 @@ abstract public class structure {
     }
 
     /**
+     * liefert den Inhalt des Attributs oder defaultValue
      *
-     * @param content
-     * @param name
-     * @param defaultValue
-     * @return
+     * @param content      das Objekt
+     * @param name         der gesuchte Attributname
+     * @param defaultValue der Wert, falls die Zelle nicht existiert
+     * @return der Inhalt von content[name] oder defaultValue
      */
     protected final String handleStringEntry(JsonObject content, String name, String defaultValue) {
         if (content.has(name)) {
@@ -94,11 +106,12 @@ abstract public class structure {
     }
 
     /**
+     * liefert den Inhalt des Attributs oder defaultValue
      *
-     * @param content
-     * @param name
-     * @param defaultValue
-     * @return
+     * @param content      das Objekt
+     * @param name         der gesuchte Attributname
+     * @param defaultValue der Wert, falls die Zelle nicht existiert
+     * @return der Inhalt von content[name] oder defaultValue
      */
     protected final Integer handleIntEntry(JsonObject content, String name, Integer defaultValue) {
         if (content.has(name)) {
@@ -128,39 +141,50 @@ abstract public class structure {
     }
 
     /**
+     * wandelt eine Textdarstellung in ein Objekt[] um
      *
-     * @param content
-     * @return
+     * @param content als JSON Objekt[] (Eingabe)
+     * @return das Objekt[]
      */
     protected static Object[] decode(JsonArray content) {
         return null;
     }
 
     /**
+     * wandelt eine Textdarstellung in ein Objekt[] um
      *
-     * @param content
-     * @return
+     * @param content als JSON Objekt[] (Eingabe)
+     * @return das Objekt[]
      */
     protected static Object[] decodeArray(String content) {
         return null;
     }
 
     /**
+     * wandelt das Objekt in eine Textdarstellung um (JSON)
      *
-     * @return
+     * @return die Textdarstellung (als JSON)
      */
     public String encode() {
         return encodeToObject().toString();
     }
 
     /**
+     * wandelt das Objekt in eine Textdarstellung um (JSON)
      *
-     * @return
+     * @return die Textdarstellung (als JSON)
      */
     public JsonObject encodeToObject() {
         return encodeToObject(new JsonObject());
     }
 
+    /**
+     * bereit ein encode vor, indem die Daten dieses Objekts an object
+     * angehangen werden
+     *
+     * @param object das Eingabeobjekt
+     * @return das Eingabeobjekt + {sender, messages, status, structure}
+     */
     public JsonObject encodeToObject(JsonObject object) {
         if (messages != null) {
             JsonArray mess = new JsonArray();
@@ -176,10 +200,29 @@ abstract public class structure {
         return object;
     }
 
+    /*
+     * der Absender (keine Verwendung)
+     */
     private String sender;
+
+    /*
+     * ein HTTP-Status zum Objekt (sowas wie 201 = erstellt, 409 = Problem)
+     */
     private String status;
+
+    /*
+     * Meldungen, welche dem Nutzer so mitgeteilt werden können
+     */
     private String[] messages;
+
+    /*
+     * der Strukturtyp (keine Verwendung)
+     */
     private String structure;
+
+    /*
+     * die bevorzugte Sprache (de, en, ...) (keine Verwendung)
+     */
     private String language;
 
     /**

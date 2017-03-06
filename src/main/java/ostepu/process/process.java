@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Till Uhlig <till.uhlig@student.uni-halle.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -25,7 +25,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,25 +48,30 @@ public class process extends HttpServlet {
         {"GET", "/link/exists/course/([0-9_]*)"}};
 
     /**
-     *
+     * hier werden alle aufrufbaren Befehle als Objekt gesammelt (werden dann
+     * von processRequest aufgerufen)
      */
-    public command[] restCommands = {new postProcess(),new postCourse(), new deleteCourse(), new getCourseExists()};
+    protected command[] restCommands = {new postProcess(), new postCourse(), new deleteCourse(), new getCourseExists()};
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
+     * methods. (hier wird der richtige Unterbefehl ausgewählt)
      *
      * @param request  servlet request
      * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
      */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, Exception {
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response) {
         response.setContentType("text/html;charset=UTF-8");
-        PrintWriter out = response.getWriter();
+        PrintWriter out;
+        try {
+            out = response.getWriter();
+        } catch (IOException ex) {
+            Logger.getLogger(process.class.getName()).log(Level.SEVERE, null, ex);
+            response.setStatus(500);
+            return;
+        }
         String pathInfo = StringUtils.substring(request.getRequestURI(), request.getContextPath().length());
-        
+
         // lädt die Anmeldedaten (eventuell für eine httpAuth)
         httpAuth.loadLocalAuthData(getServletContext());
 
@@ -92,7 +96,12 @@ public class process extends HttpServlet {
         } finally {
             out.close();
         }
-        response.sendError(409);
+        try {
+            response.sendError(409);
+        } catch (IOException ex) {
+            Logger.getLogger(process.class.getName()).log(Level.SEVERE, null, ex);
+            response.setStatus(500);
+        }
     }
 
     /**
@@ -100,12 +109,9 @@ public class process extends HttpServlet {
      *
      * @param request  servlet request
      * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) {
         try {
             processRequest(request, response);
         } catch (Exception ex) {
@@ -118,12 +124,9 @@ public class process extends HttpServlet {
      *
      * @param request  servlet request
      * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException      if an I/O error occurs
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
         try {
             processRequest(request, response);
         } catch (Exception ex) {
@@ -138,7 +141,7 @@ public class process extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
+        return "Dieser Dienst dient der Behandlung aller /course und /link und /process Aufrufe für OSTEPU";
+    }
 
 }

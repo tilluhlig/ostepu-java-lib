@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Till Uhlig <till.uhlig@student.uni-halle.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,9 +16,7 @@
  */
 package ostepu.process;
 
-import java.io.IOException;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -29,13 +27,13 @@ import javax.servlet.http.HttpServletResponse;
 public interface command {
 
     /**
+     * das ist ein REST-Aufruf, der entsprechend einer definierten
+     * Zusammenstellung aus METHODE und PFAD von jemandem aufgerufen werden kann
      *
-     * @param context
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
+     * @param context  der Serverkontent
+     * @param request  der eingehende Aufruf
+     * @param response das Rückgabeobjekt
      */
-    void execute(ServletContext context, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException, Exception;
+    void execute(ServletContext context, HttpServletRequest request, HttpServletResponse response);
 
 }

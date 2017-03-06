@@ -17,32 +17,16 @@
 package ostepu.cconfig;
 
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.*;
 import javax.servlet.*;
-
-import ostepu.cconfig.info;
-
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
-
-import java.util.HashMap;
 import java.util.Map;
-
 import com.google.gson.*;
-import static java.lang.System.console;
-import java.net.ProtocolException;
-
 import java.util.List;
-import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import ostepu.request.authentication;
@@ -54,20 +38,21 @@ import ostepu.structure.component;
 import ostepu.structure.link;
 
 /**
+ * Dieses Servlet behandelt die Konfiguration dieses Webservices als Komponente
+ * von OSTEPU
  *
  * @author Till
  */
 public class cconfig extends HttpServlet {
 
     /**
+     * bei einem eingehenden Aufruf behandelt diese Methode den Aufruf und wählt
+     * die entsprechende Unterfunktion aus
      *
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
+     * @param request  der eingehende Aufruf
+     * @param response das Rückgabeobjekt
      */
-    protected void doRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, Exception {
+    protected void doRequest(HttpServletRequest request, HttpServletResponse response) {
 
         // lädt die Anmeldedaten (eventuell für eine httpAuth)
         httpAuth.loadLocalAuthData(getServletContext());
@@ -81,20 +66,23 @@ public class cconfig extends HttpServlet {
         } else if ("/control".equals(servletPath)) {
             control.request(getServletContext(), request, response);
         } else {
-            response.sendError(404);
+            try {
+                response.sendError(404);
+            } catch (IOException ex) {
+                Logger.getLogger(cconfig.class.getName()).log(Level.SEVERE, null, ex);
+                response.setStatus(500);
+            }
         }
     }
 
     /**
+     * behandelt einen eingehenden GET-Aufruf
      *
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
+     * @param request  der eingehende Aufruf
+     * @param response das Rückgabeobjekt
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) {
         try {
             doRequest(request, response);
         } catch (Exception ex) {
@@ -103,15 +91,13 @@ public class cconfig extends HttpServlet {
     }
 
     /**
+     * behandelt einen eingehenden POST-Aufruf
      *
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
+     * @param request  der eingehende Aufruf
+     * @param response das Rückgabeobjekt
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) {
         try {
             doRequest(request, response);
         } catch (Exception ex) {
@@ -126,21 +112,22 @@ public class cconfig extends HttpServlet {
      */
     @Override
     public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
+        return "Dieses Servlet behandelt die Konfiguration dieses Webservices als Komponente von OSTEPU";
+    }
 
     /**
-     *
+     * wenn die Komponentendefinition geladen wurde, dann wir sie hier abgelegt,
+     * sodass wir sie nicht immer erneut laden müssen
      */
     public static JsonObject myComponent = null;
 
     /**
+     * lädt die Komponentendefinition (component.json)
      *
-     * @param context
-     * @return
-     * @throws IOException
+     * @param context der kontext des Servlet
+     * @return die Konfiguration oder null (Fehler)
      */
-    public static JsonObject loadComponent(ServletContext context) throws IOException {
+    public static JsonObject loadComponent(ServletContext context) {
         if (myComponent != null) {
             return myComponent;
         }
@@ -161,17 +148,18 @@ public class cconfig extends HttpServlet {
     }
 
     /**
-     *
+     * hier wird die Konfiguration der Komponente nach dem einmaligen Laden
+     * hinterlegt
      */
     public static component myConf = null;
 
     /**
+     * lädt die Konfiguration der Komponente
      *
-     * @param context
-     * @return
-     * @throws IOException
+     * @param context der Servlet-Kontext
+     * @return die Konfiguration oder null (Fehler)
      */
-    public static component loadConfig(ServletContext context) throws IOException {
+    public static component loadConfig(ServletContext context) {
         if (myConf != null) {
             return myConf;
         }
@@ -193,10 +181,11 @@ public class cconfig extends HttpServlet {
     }
 
     /**
+     * ermittelt eine Verbinung linkName aus einer Komponentendefinition content
      *
-     * @param content
-     * @param linkName
-     * @return
+     * @param content  die Definition einer Komponente
+     * @param linkName der Linkname
+     * @return der Link oder null (Fehler oder unbekannt)
      */
     public static link getLink(component content, String linkName) {
         if (content == null) {
@@ -212,31 +201,50 @@ public class cconfig extends HttpServlet {
     }
 
     /**
+     * ermittelt eine Verbinung linkName aus der globalen Komponentendefinition
      *
-     * @param mycomponent
-     * @param linkName
-     * @param URI
-     * @param method
-     * @param content
-     * @return
-     * @throws Exception
+     * @param linkName der Linkname
+     * @return der Link oder null (Fehler oder unbekannt)
      */
-    public static httpRequestResult callLinkByName(component mycomponent, String linkName, String URI, String method, String content) throws Exception {
+    public static link getLink(String linkName) {
+        if (myConf == null) {
+            return null;
+        }
+
+        for (link mylink : myConf.getLinks()) {
+            if (mylink.getName().equals(linkName)) {
+                return mylink;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * ruft einen Link anhand seines Namens auf
+     *
+     * @param mycomponent die Komponentendefinition
+     * @param linkName    der Name der Verbindung
+     * @param URI         der Befehl
+     * @param method      die Methode (GET, POST, DELETE, ...)
+     * @param content     der Inhalt
+     * @return das Ergebnis der Anfrage
+     */
+    public static httpRequestResult callLinkByName(component mycomponent, String linkName, String URI, String method, String content) {
         return callLinkByName(mycomponent, linkName, URI, method, content, new noAuth());
     }
 
     /**
+     * ruft einen Link anhand seines Namens auf
      *
-     * @param mycomponent
-     * @param linkName
-     * @param URI
-     * @param method
-     * @param content
-     * @param auth
-     * @return
-     * @throws Exception
+     * @param mycomponent die Komponentendefinition
+     * @param linkName    der Name der Verbindung
+     * @param URI         der Befehl
+     * @param method      die Methode (GET, POST, DELETE, ...)
+     * @param content     der Inhalt
+     * @param auth        eine Authentifizierungsmethode
+     * @return das Ergebnis der Anfrage
      */
-    public static httpRequestResult callLinkByName(component mycomponent, String linkName, String URI, String method, String content, authentication auth) throws Exception {
+    public static httpRequestResult callLinkByName(component mycomponent, String linkName, String URI, String method, String content, authentication auth) {
         link linkObject = getLink(mycomponent, linkName);
         if (linkObject.getAddress() == null) {
             return null;
@@ -247,29 +255,33 @@ public class cconfig extends HttpServlet {
     }
 
     /**
+     * ruft eine Verbindung auf und verwendet dabei die Befehlsinformationen aus
+     * der Linkdefinition
      *
-     * @param mycomponent
-     * @param linkObject
-     * @param content
-     * @param placeholder
-     * @return
-     * @throws Exception
+     * @param mycomponent die Komponentendefinition
+     * @param linkObject  die Verbindung
+     * @param content     der Inhalt
+     * @param placeholder Platzhalter, welche im Aufrufbefehl ersetzt werden
+     *                    soll (PLATZHALTER => TEXT)
+     * @return das Ergebnis
      */
-    public static httpRequestResult callConstLink(JsonObject mycomponent, link linkObject, String content, Map<String, String> placeholder) throws Exception {
+    public static httpRequestResult callConstLink(JsonObject mycomponent, link linkObject, String content, Map<String, String> placeholder) {
         return callConstLink(mycomponent, linkObject, content, placeholder, new noAuth());
     }
 
     /**
+     * ruft eine Verbindung auf und verwendet dabei die Befehlsinformationen aus
+     * der Linkdefinition
      *
-     * @param mycomponent
-     * @param linkObject
-     * @param content
-     * @param placeholder
-     * @param auth
-     * @return
-     * @throws Exception
+     * @param mycomponent die Komponentendefinition
+     * @param linkObject  die Verbindung
+     * @param content     der Inhalt
+     * @param placeholder placeholder Platzhalter, welche im Aufrufbefehl
+     *                    ersetzt werden soll (PLATZHALTER => TEXT)
+     * @param auth        eine Authentifizierungsmethode
+     * @return das Ergebnis
      */
-    public static httpRequestResult callConstLink(JsonObject mycomponent, link linkObject, String content, Map<String, String> placeholder, authentication auth) throws Exception {
+    public static httpRequestResult callConstLink(JsonObject mycomponent, link linkObject, String content, Map<String, String> placeholder, authentication auth) {
         if (mycomponent.has("links")) {
             JsonArray linkList = mycomponent.get("links").getAsJsonArray();
             for (JsonElement mylink : linkList) {

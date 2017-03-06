@@ -21,6 +21,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
+ * die Reference-Struktur von OSTEPU
  *
  * @author Till Uhlig <till.uhlig@student.uni-halle.de>
  */
@@ -51,19 +52,27 @@ public class reference extends structure {
         return new reference(content);
     }
 
+    /*
+     * die globale relative Adresse
+     */
     private String globalRef = null;
+
+    /*
+     * die lokale Adresse (wenn wir auf dem selben Server sind)
+     */
     private String localRef = null;
 
     /**
-     *
+     * der Standardkonstruktor
      */
     public reference() {
-
+        // kein Inhalt
     }
 
     /**
+     * initialisiert das Objekt anhand eines JSON-Objekts
      *
-     * @param content
+     * @param content der zukünftige Inhalt
      */
     public reference(JsonObject content) {
         localRef = handleStringEntry(content, "localRef", localRef);
@@ -71,8 +80,9 @@ public class reference extends structure {
     }
 
     /**
+     * wandelt das Objekt in eine Textdarstellung um (JSON)
      *
-     * @return
+     * @return die Textdarstellung (als JSON)
      */
     @Override
     public String encode() {

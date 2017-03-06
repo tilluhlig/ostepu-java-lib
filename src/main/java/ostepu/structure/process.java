@@ -18,26 +18,61 @@ package ostepu.structure;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * die Process-Struktur von OSTEPU
  *
  * @author Till Uhlig <till.uhlig@student.uni-halle.de>
  */
 public class process extends structure {
 
+    /*
+     * die ID des Vorgangs oder Prozess-Eintrags
+     */
     private String processId = null;
+
+    /*
+     * die zugehörige Aufgabe
+     */
     private exercise exercise = null;
+
+    /*
+     * die Informationen über die Komponente, welche des Vorgang ausführen soll
+     */
     private component target = null;
+
+    /*
+     * eventuelle Parameter (beliebig kodiert)
+     */
     private String parameter = null;
+
+    /*
+     * Vorgangsanhänge erster Art
+     */
     private List<attachment> attachment = null;
+
+    /*
+     * Vorgangsanhänge zweiter Art
+     */
     private List<attachment> workFiles = null;
+
+    /*
+     * die Einsendung, welche dann so auch gespeichert werden soll
+     */
     private submission submission = null;
+
+    /*
+     * die unbehandelte Einsendung des Studenten
+     */
     private submission rawSubmission = null;
+
+    /*
+     * ein Korrekturobjekt
+     */
     private marking marking = null;
 
     /**
@@ -66,15 +101,16 @@ public class process extends structure {
     }
 
     /**
-     *
+     * der Standardkonstruktor
      */
     public process() {
-
+        // kein Inhalt
     }
 
     /**
+     * initialisiert das Objekt anhand eines JSON-Objekts
      *
-     * @param content
+     * @param content der zukünftige Inhalt
      */
     public process(JsonObject content) {
         processId = handleStringEntry(content, "processId", processId);
@@ -117,8 +153,9 @@ public class process extends structure {
     }
 
     /**
+     * wandelt das Objekt in eine Textdarstellung um (JSON)
      *
-     * @return
+     * @return die Textdarstellung (als JSON)
      */
     @Override
     public String encode() {

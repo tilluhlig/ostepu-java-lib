@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Till Uhlig <till.uhlig@student.uni-halle.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,48 +16,48 @@
  */
 package ostepu.cconfig;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSyntaxException;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.regex.Matcher;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.*;
-import static ostepu.cconfig.info.getCommands;
-import static ostepu.cconfig.info.getInfo;
-import static ostepu.cconfig.info.getLinks;
 import org.apache.commons.io.IOUtils;
-import ostepu.structure.component;
 
 /**
+ * dieser Befehlsteil liefert und schreibt die Konfiguration der Komponente als
+ * OSTEPU-Komponente
  *
  * @author Till
  */
 public class control {
 
     /**
+     * ruft die existierende Konfiguration ab und gibt sie aus
      *
-     * @param context
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
+     * @param context  der Kontext des Servlet
+     * @param request  die eingehende Anfrage
+     * @param response das Antwortobjekt
      */
-    public static void getControl(ServletContext context, HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        PrintWriter out = response.getWriter();
+    public static void getControl(ServletContext context, HttpServletRequest request, HttpServletResponse response) {
+        PrintWriter out;
+        try {
+            out = response.getWriter();
+        } catch (IOException ex) {
+            Logger.getLogger(control.class.getName()).log(Level.SEVERE, null, ex);
+            response.setStatus(500);
+            return;
+        }
         Path cconfigPath = Paths.get(context.getRealPath("data/CConfig.json"));
 
         try {
@@ -78,21 +78,23 @@ public class control {
                 response.setStatus(404);
                 out.print("[]");
             }
+        } catch (IOException ex) {
+            Logger.getLogger(control.class.getName()).log(Level.SEVERE, null, ex);
+            response.setStatus(500);
         } finally {
             out.close();
         }
     }
 
     /**
+     * diese Methode wird von Außen aufgerufen und wählt die passende
+     * Unterfunktion
      *
-     * @param context
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
+     * @param context  der Kontext des Servlet
+     * @param request  die eingehende Anfrage
+     * @param response das Antwortobjekt
      */
-    public static void request(ServletContext context, HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    public static void request(ServletContext context, HttpServletRequest request, HttpServletResponse response) {
         String pathInfo = request.getPathInfo();
 
         if ("GET".equals(request.getMethod())) {
@@ -100,21 +102,32 @@ public class control {
         } else if ("POST".equals(request.getMethod())) {
             setControl(context, request, response);
         } else {
-            response.sendError(404);
+            try {
+                response.sendError(404);
+            } catch (IOException ex) {
+                Logger.getLogger(control.class.getName()).log(Level.SEVERE, null, ex);
+                response.setStatus(500);
+            }
         }
     }
 
     /**
+     * setzt die Konfiguration der Komponente anhand der eingehenden Daten
      *
-     * @param context
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
+     * @param context  der Kontext des Servlet
+     * @param request  die eingehende Anfrage
+     * @param response das Antwortobjekt
      */
-    public static void setControl(ServletContext context, HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        PrintWriter out = response.getWriter();
+    public static void setControl(ServletContext context, HttpServletRequest request, HttpServletResponse response) {
+        PrintWriter out;
+        try {
+            out = response.getWriter();
+        } catch (IOException ex) {
+            Logger.getLogger(control.class.getName()).log(Level.SEVERE, null, ex);
+            response.setStatus(500);
+            return;
+        }
+
         Path cconfigPath = Paths.get(context.getRealPath("data/CConfig.json"));
 
         try {
@@ -131,12 +144,17 @@ public class control {
             Files.write(cconfigPath, newObject.toString().getBytes());
             cconfig.myConf = null;
             response.setStatus(201);
-        } catch (IOException e) {
-            response.sendError(500);
-        } catch (JsonSyntaxException e) {
-            response.sendError(500);
+        } catch (IOException | JsonSyntaxException e) {
+            try {
+                response.sendError(500);
+            } catch (IOException ex) {
+                Logger.getLogger(control.class.getName()).log(Level.SEVERE, null, ex);
+                response.setStatus(500);
+            }
         } finally {
-            out.close();
+            if (out != null) {
+                out.close();
+            }
         }
     }
 

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Till Uhlig <till.uhlig@student.uni-halle.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,18 +21,15 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-
 import com.google.gson.*;
-
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletOutputStream;
 
 /**
  *
@@ -47,21 +44,34 @@ public class info {
     private static Pattern regExGetLinks = Pattern.compile("/links");
 
     /**
+     * liefert die definierten Aufrufe (anhand der data/commands.json)
      *
-     * @param context
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
+     * @param context  der Kontext des Servlet
+     * @param request  die eingehende Anfrage
+     * @param response das Antwortobjekt
      */
-    public static void getCommands(ServletContext context, HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        PrintWriter out = response.getWriter();
+    public static void getCommands(ServletContext context, HttpServletRequest request, HttpServletResponse response) {
+        PrintWriter out;
+        try {
+            out = response.getWriter();
+        } catch (IOException ex) {
+            Logger.getLogger(info.class.getName()).log(Level.SEVERE, null, ex);
+            response.setStatus(500);
+            return;
+        }
         Path commandsPath = Paths.get(context.getRealPath("data/commands.json"));
 
         try {
             if (Files.exists(commandsPath)) {
-                List<String> commands = Files.readAllLines(commandsPath);
+                List<String> commands;
+                try {
+                    commands = Files.readAllLines(commandsPath);
+                } catch (IOException ex) {
+                    Logger.getLogger(info.class.getName()).log(Level.SEVERE, null, ex);
+                    response.setStatus(500);
+                    out.print("[]");
+                    return;
+                }
                 JsonElement obj = new JsonParser().parse(String.join("", commands));
                 JsonArray aa = obj.getAsJsonArray();
 
@@ -83,21 +93,32 @@ public class info {
     }
 
     /**
+     * liefert die Definition der Komponente (anhand der data/component.json)
      *
-     * @param context
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
+     * @param context  der Kontext des Servlet
+     * @param request  die eingehende Anfrage
+     * @param response das Antwortobjekt
      */
-    public static void getComponent(ServletContext context, HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        PrintWriter out = response.getWriter();
+    public static void getComponent(ServletContext context, HttpServletRequest request, HttpServletResponse response) {
+        PrintWriter out;
+        try {
+            out = response.getWriter();
+        } catch (IOException ex) {
+            Logger.getLogger(info.class.getName()).log(Level.SEVERE, null, ex);
+            response.setStatus(500);
+            return;
+        }
         Path componentPath = Paths.get(context.getRealPath("data/component.json"));
 
         try {
             if (Files.exists(componentPath)) {
-                out.print(String.join("", Files.readAllLines(componentPath)));
+                try {
+                    out.print(String.join("", Files.readAllLines(componentPath)));
+                } catch (IOException ex) {
+                    Logger.getLogger(info.class.getName()).log(Level.SEVERE, null, ex);
+                    response.setStatus(500);
+                    out.print("[]");
+                }
             } else {
                 response.setStatus(200);
                 out.print("[]");
@@ -108,28 +129,45 @@ public class info {
     }
 
     /**
+     * liefert eine Beschreibung anhand der data/help/de.md oder anderer
      *
-     * @param context
-     * @param language
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
+     * @param context  der Kontext des Servlet
+     * @param language ein Sprachkürzel (de, en, ...)
+     * @param request  die eingehende Anfrage
+     * @param response das Antwortobjekt
      */
-    public static void getInfo(ServletContext context, String language, HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    public static void getInfo(ServletContext context, String language, HttpServletRequest request, HttpServletResponse response) {
         String infoFile = context.getRealPath("data/help/" + language + ".md");
         String defaultInfoFile = context.getRealPath("data/help/" + language + ".md");
-        PrintWriter out = response.getWriter();
+        PrintWriter out;
+        try {
+            out = response.getWriter();
+        } catch (IOException ex) {
+            Logger.getLogger(info.class.getName()).log(Level.SEVERE, null, ex);
+            response.setStatus(500);
+            return;
+        }
 
         try {
             if (Files.exists(Paths.get(infoFile))) {
                 response.setStatus(200);
-                out.print(String.join("", Files.readAllLines(Paths.get(infoFile))));
+                try {
+                    out.print(String.join("", Files.readAllLines(Paths.get(infoFile))));
+                } catch (IOException ex) {
+                    Logger.getLogger(info.class.getName()).log(Level.SEVERE, null, ex);
+                    response.setStatus(404);
+                    out.print("no Content");
+                }
             } else {
                 if (Files.exists(Paths.get(defaultInfoFile))) {
                     response.setStatus(200);
-                    out.print(String.join("", Files.readAllLines(Paths.get(defaultInfoFile))));
+                    try {
+                        out.print(String.join("", Files.readAllLines(Paths.get(defaultInfoFile))));
+                    } catch (IOException ex) {
+                        Logger.getLogger(info.class.getName()).log(Level.SEVERE, null, ex);
+                        response.setStatus(404);
+                        out.print("no Content");
+                    }
                 } else {
                     response.setStatus(404);
                 }
@@ -141,20 +179,32 @@ public class info {
 
     /**
      *
-     * @param context
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
+     * @param context  der Kontext des Servlet
+     * @param request  die eingehende Anfrage
+     * @param response das Antwortobjekt
      */
-    public static void getLinks(ServletContext context, HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, Exception {
-        ServletOutputStream out = response.getOutputStream();
+    public static void getLinks(ServletContext context, HttpServletRequest request, HttpServletResponse response) {
+        PrintWriter out;
+        try {
+            out = response.getWriter();
+        } catch (IOException ex) {
+            Logger.getLogger(info.class.getName()).log(Level.SEVERE, null, ex);
+            response.setStatus(500);
+            return;
+        }
         Path componentPath = Paths.get(context.getRealPath("data/component.json"));
 
         try {
             if (Files.exists(componentPath)) {
-                List<String> content = Files.readAllLines(componentPath);
+                List<String> content;
+                try {
+                    content = Files.readAllLines(componentPath);
+                } catch (IOException ex) {
+                    Logger.getLogger(info.class.getName()).log(Level.SEVERE, null, ex);
+                    response.setStatus(404);
+                    out.print("[]");
+                    return;
+                }
                 JsonElement obj = new JsonParser().parse(String.join("", content));
                 JsonObject aa = obj.getAsJsonObject();
 
@@ -176,24 +226,33 @@ public class info {
     }
 
     /**
+     * Diese Methode wird von Außen aufgerufen und behandelt alle eingehenden
+     * Anfragen (wählt dann die Untermethode)
      *
-     * @param context
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
+     * @param context  der Kontext des Servlet
+     * @param request  die eingehende Anfrage
+     * @param response das Antwortobjekt
      */
-    public static void request(ServletContext context, HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, Exception {
+    public static void request(ServletContext context, HttpServletRequest request, HttpServletResponse response) {
         String pathInfo = request.getPathInfo();
 
         if (pathInfo == null) {
-            response.sendError(404);
+            try {
+                response.sendError(404);
+            } catch (IOException ex) {
+                Logger.getLogger(info.class.getName()).log(Level.SEVERE, null, ex);
+                response.setStatus(500);
+            }
             return;
         }
 
         if (!"GET".equals(request.getMethod())) {
-            response.sendError(404);
+            try {
+                response.sendError(404);
+            } catch (IOException ex) {
+                Logger.getLogger(info.class.getName()).log(Level.SEVERE, null, ex);
+                response.setStatus(500);
+            }
             return;
         }
 
@@ -224,7 +283,12 @@ public class info {
             return;
         }
 
-        response.sendError(404);
+        try {
+            response.sendError(404);
+        } catch (IOException ex) {
+            Logger.getLogger(info.class.getName()).log(Level.SEVERE, null, ex);
+            response.setStatus(500);
+        }
     }
 
 }

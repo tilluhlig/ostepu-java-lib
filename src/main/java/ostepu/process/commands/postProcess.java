@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Till Uhlig <till.uhlig@student.uni-halle.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,38 +19,57 @@ package ostepu.process.commands;
 import com.google.gson.JsonObject;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import ostepu.cconfig.cconfig;
 import ostepu.process.command;
 import ostepu.structure.component;
-import ostepu.structure.course;
 import ostepu.structure.process;
 
 /**
- * Dieser Befehl bearbeitet eingehende Korrekturanfragen (wenn ein Student also etwas einsendet)
+ * Dieser Befehl bearbeitet eingehende Korrekturanfragen (wenn ein Student also
+ * etwas einsendet) Dabei handelt es sich hierbei allerdings nur um ein DUMMY,
+ * falls keine konkrete Umsetzung anderweitig implementiert wurde
+ *
  * @author Till
  */
 public class postProcess implements command {
+
     @Override
-        public void execute(ServletContext context, HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        PrintWriter out = response.getWriter();
-        
+    public void execute(ServletContext context, HttpServletRequest request, HttpServletResponse response) {
+        PrintWriter out;
+        try {
+            out = response.getWriter();
+        } catch (IOException ex) {
+            Logger.getLogger(postProcess.class.getName()).log(Level.SEVERE, null, ex);
+            response.setStatus(500);
+            return;
+        }
+
         component conf = cconfig.loadConfig(context);
         JsonObject mycomponent = cconfig.loadComponent(context);
 
-        String incomingProcessString = IOUtils.toString(request.getInputStream());
+        String incomingProcessString;
+        try {
+            incomingProcessString = IOUtils.toString(request.getInputStream());
+        } catch (IOException ex) {
+            Logger.getLogger(postProcess.class.getName()).log(Level.SEVERE, null, ex);
+            response.setStatus(500);
+            return;
+        }
+
+        // die Eingabe wird gelesen und zu einem process-Objekt umgewandelt,
+        // um den Status zu setzen
         process processObject = (process) process.decode(incomingProcessString);
         processObject.setStatus("201");
 
-        // ausfüllen
+        // einfach wieder zurück senden
         out.write(processObject.encode());
         response.setStatus(201);
     }
+
 }

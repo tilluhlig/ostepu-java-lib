@@ -21,19 +21,61 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
+ * die Link-Struktur von OSTEPU
  *
  * @author Till Uhlig <till.uhlig@student.uni-halle.de>
  */
 public class link extends structure {
 
+    /*
+     * die ID der Verbindung
+     */
     private String id = null;
+
+    /*
+     * der Name der Verbindung (sowas wie postProcess)
+     */
     private String name = null;
+
+    /*
+     * die Aufrufadresse des Ziels. Bsp.:
+     * http://localhost:80/uebungsplattform/DB/DBQuery2
+     */
     private String address = null;
+
+    /*
+     * die Komponenten-ID des Ziels
+     */
     private String target = null;
+
+    /*
+     * gibt eine Auflistung der Präfixe an, welche über diese Verbindung
+     * aufgerufen werden können Bsp.: wenn prefix = "course", dann können
+     * /course/... Befehle aufgerufen werden (veraltet)
+     */
     private String prefix = null;
+
+    /*
+     * die Priorität der Auswführung (wenn es mehrere gibt), als Zahl Bsp.: 100
+     * = Normalwert, kleine Zahl = hohe Priorität, große Zahl = niedrige
+     * Priorität
+     */
     private String priority = null;
+
+    /*
+     * die ID des Besitzers (dessen ausgehende Kante das ist)
+     */
     private String owner = null;
+
+    /*
+     * ein String, den die Komponente nutzt, um eventuelle Entscheidungen zu
+     * treffen
+     */
     private String relevanz = null;
+
+    /*
+     * der Name der Zielkomponente
+     */
     private String targetName = null;
 
     /**
@@ -62,15 +104,16 @@ public class link extends structure {
     }
 
     /**
-     *
+     * der Standardkonstruktor
      */
     public link() {
-
+        // kein Inhalt
     }
 
     /**
+     * initialisiert das Objekt anhand eines JSON-Objekts
      *
-     * @param content
+     * @param content der zukünftige Inhalt
      */
     public link(JsonObject content) {
         id = handleStringEntry(content, "id", id);
@@ -85,8 +128,9 @@ public class link extends structure {
     }
 
     /**
+     * wandelt das Objekt in eine Textdarstellung um (JSON)
      *
-     * @return
+     * @return die Textdarstellung (als JSON)
      */
     @Override
     public String encode() {

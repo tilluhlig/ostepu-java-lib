@@ -16,30 +16,89 @@
  */
 package ostepu.structure;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
+ * die Submission-Struktur von OSTEPU
  *
  * @author Till Uhlig <till.uhlig@student.uni-halle.de>
  */
 public class submission extends structure {
 
+    /*
+     * die ID der Einsendung
+     */
     private String id = null;
+
+    /*
+     * die ID des Studenten, der sie eingereicht hat
+     */
     private String studentId = null;
+
+    /*
+     * die ID der Aufgabe
+     */
     private String exerciseId = null;
+
+    /*
+     * die ID der Übungsserie
+     */
     private String exerciseSheetId = null;
+
+    /*
+     * der Kommentar des Studenten zu seiner Einsendung
+     */
     private String comment = null;
+
+    /*
+     * die Datei der Einsendung
+     */
     private file file = null;
+
+    /*
+     * 1 = die Einsendung wurde akzeptiert, 0 = nicht akzeptiert (eventuell
+     * wurde sie zu spät eingesendet)
+     */
     private String accepted = null;
+
+    /*
+     * ob die Datei in die Punkte eingeht (ob sie also von der Gruppe zur
+     * Korrektur ausgewählt wurde)
+     */
     private String selectedForGroup = null;
+
+    /*
+     * der Unix-Zeitstempel des Einsendens
+     */
     private String date = null;
+
+    /*
+     * der Textname der Aufgabe (wenn vorhanden)
+     */
     private String exerciseNumber = null;
+
+    /*
+     * ein Status der Einsendung 0 = wurde durch den Studenten zum Löschen
+     * markiert
+     */
     private String flag = null;
+
+    /*
+     * die Nutzer-ID des Gruppenführers
+     */
     private String leaderId = null;
+
+    /*
+     * ob die Einsendung als Datei in der Plattform angezeigt werden soll 1 =
+     * nein, 0 = ja wird normal angezeigt
+     */
     private String hideFile = null;
+
+    /*
+     * der Textname der Aufgabe (wenn vorhanden) (wieso doppelt?)
+     */
     private String exerciseName = null;
 
     /**
@@ -68,15 +127,16 @@ public class submission extends structure {
     }
 
     /**
-     *
+     * der Standardkonstruktor
      */
     public submission() {
-
+        // kein Inhalt
     }
 
     /**
+     * initialisiert das Objekt anhand eines JSON-Objekts
      *
-     * @param content
+     * @param content der zukünftige Inhalt
      */
     public submission(JsonObject content) {
         id = handleStringEntry(content, "id", id);
@@ -99,8 +159,9 @@ public class submission extends structure {
     }
 
     /**
+     * wandelt das Objekt in eine Textdarstellung um (JSON)
      *
-     * @return
+     * @return die Textdarstellung (als JSON)
      */
     @Override
     public String encode() {

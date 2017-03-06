@@ -21,19 +21,56 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
+ * die File-Struktur von OSTEPU
  *
  * @author Till Uhlig <till.uhlig@student.uni-halle.de>
  */
 public class file extends structure {
 
+    /*
+     * die ID der Datei
+     */
     private String fileId = null;
+
+    /*
+     * der Anzeigename (Bsp.: meineEinsendung.pdf)
+     */
     private String displayName = null;
+
+    /*
+     * die Adresse der Datei im Dateisystem (ist nur eine relative
+     * Abfrageadresse) sowas wie: /file/a/b/c/ababab
+     */
     private String address = null;
+
+    /*
+     * der Unix-Zeitstempel der Erstellung oder des Entgegennehmens
+     */
     private String timeStamp = null;
+
+    /*
+     * die Dateigröße in Byte
+     */
     private String fileSize = null;
+
+    /*
+     * der Hash sha1-Hash des Dateiinhalts
+     */
     private String hash = null;
+
+    /*
+     * ein String, wenn es ein Textinhalt ist oder eine Referenz
+     */
     private Object body = null;
+
+    /*
+     * ein Dateikommentar (wird nicht genutzt)
+     */
     private String comment = null;
+
+    /*
+     * der ermittelte mime-Type
+     */
     private String mimeType = null;
 
     /**
@@ -62,15 +99,16 @@ public class file extends structure {
     }
 
     /**
-     *
+     * der Standardkonstruktor
      */
     public file() {
-
+        // kein Inhalt
     }
 
     /**
+     * initialisiert das Objekt anhand eines JSON-Objekts
      *
-     * @param content
+     * @param content der zukünftige Inhalt
      */
     public file(JsonObject content) {
         fileId = handleStringEntry(content, "fileId", fileId);
@@ -93,8 +131,9 @@ public class file extends structure {
     }
 
     /**
+     * wandelt das Objekt in eine Textdarstellung um (JSON)
      *
-     * @return
+     * @return die Textdarstellung (als JSON)
      */
     @Override
     public String encode() {

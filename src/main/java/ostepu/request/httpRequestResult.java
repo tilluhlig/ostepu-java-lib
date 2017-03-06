@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Till Uhlig <till.uhlig@student.uni-halle.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,6 +21,7 @@ import java.util.Map;
 
 /**
  * Diese Klasse stellt das Resultat eines http-Aufrufs dar
+ *
  * @author Till Uhlig <till.uhlig@student.uni-halle.de>
  */
 public class httpRequestResult {
@@ -49,6 +50,24 @@ public class httpRequestResult {
      * die Methode des Aufrufs
      */
     private String method;
+
+    /**
+     * initialisiert das Objekt mit Status und Inhalt
+     *
+     * @param status  der Ergebnisstatus
+     * @param content der Inhalt
+     */
+    public httpRequestResult(int status, byte[] content) {
+        this.status = status;
+        this.content = content;
+    }
+
+    /**
+     * Standardkonstruktor
+     */
+    public httpRequestResult() {
+        // kein Inhalt
+    }
 
     /**
      * @return the content

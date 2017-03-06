@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Till Uhlig <till.uhlig@student.uni-halle.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -22,43 +22,59 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FilenameUtils;
 
 /**
+ * dieser Befehl liefert Dateien des "help" Ordners als Hilfedateien für OSTEPU
  *
  * @author Till
  */
 public class help {
 
     /**
+     * der Aufruf des help-Befehls
      *
-     * @param context
-     * @param request
-     * @param response
-     * @throws ServletException
-     * @throws IOException
+     * @param context  der Kontext des Servlet
+     * @param request  die eingehende Anfrage
+     * @param response das Antwortobjekt
      */
-    public static void request(ServletContext context, HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    public static void request(ServletContext context, HttpServletRequest request, HttpServletResponse response) {
         String pathInfo = request.getPathInfo();
 
         if (pathInfo == null) {
-            System.out.println("ff");
-            response.sendError(404);
+            try {
+                response.sendError(404);
+            } catch (IOException ex) {
+                Logger.getLogger(help.class.getName()).log(Level.SEVERE, null, ex);
+                response.setStatus(500);
+            }
             return;
         }
 
         if (!"GET".equals(request.getMethod())) {
             System.out.println("bb");
-            response.sendError(404);
+            try {
+                response.sendError(404);
+            } catch (IOException ex) {
+                Logger.getLogger(help.class.getName()).log(Level.SEVERE, null, ex);
+                response.setStatus(500);
+            }
             return;
         }
 
-        PrintWriter out = response.getWriter();
+        PrintWriter out;
+        try {
+            out = response.getWriter();
+        } catch (IOException ex) {
+            Logger.getLogger(help.class.getName()).log(Level.SEVERE, null, ex);
+            response.setStatus(500);
+            return;
+        }
         String[] helpPath = pathInfo.split("/");
         String extension = FilenameUtils.getExtension(pathInfo);
         String language = helpPath[1];
@@ -74,6 +90,9 @@ public class help {
             } else {
                 response.sendError(404);
             }
+        } catch (IOException ex) {
+            Logger.getLogger(help.class.getName()).log(Level.SEVERE, null, ex);
+            response.setStatus(500);
         } finally {
             out.close();
         }

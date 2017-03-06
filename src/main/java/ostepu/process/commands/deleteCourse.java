@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Till Uhlig <till.uhlig@student.uni-halle.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -18,22 +18,29 @@ package ostepu.process.commands;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import ostepu.process.command;
 
 /**
+ * Dieser Befehl trägt das Modul aus der Veranstaltung aus (als Verarbeitung)
  *
  * @author Till Uhlig <till.uhlig@student.uni-halle.de>
  */
 public class deleteCourse implements command {
 
     @Override
-    public void execute(ServletContext context, HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        PrintWriter out = response.getWriter();
+    public void execute(ServletContext context, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            PrintWriter out = response.getWriter();
+        } catch (IOException ex) {
+            Logger.getLogger(deleteCourse.class.getName()).log(Level.SEVERE, null, ex);
+            response.setStatus(500);
+            return;
+        }
 
         // Todo: ausfüllen
         response.setStatus(201);

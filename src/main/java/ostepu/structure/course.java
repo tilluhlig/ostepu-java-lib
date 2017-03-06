@@ -19,17 +19,34 @@ package ostepu.structure;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import java.util.Map;
 
 /**
+ * die Course-Struktur von OSTEPU
  *
  * @author Till Uhlig <till.uhlig@student.uni-halle.de>
  */
 public class course extends structure {
 
+    /*
+     * die ID der Veranstaltung
+     */
     private String id = null;
+
+    /*
+     * der Name der Veranstaltung (sowas wie "Bildverarbeitung" oder
+     * "Rechnernetze 16/2017"
+     */
     private String name = null;
+
+    /*
+     * das Semester als Text ("SS 2017", "WS 2016/2017")
+     */
     private String semester = null;
+
+    /*
+     * die Standardgruppengröße der Übungsserien (dient nur als Vorgabe beim
+     * Erstellen von Übungsserien)
+     */
     private String defaultGroupSize = null;
 
     /**
@@ -58,15 +75,16 @@ public class course extends structure {
     }
 
     /**
-     *
+     * der Standardkonstruktor
      */
     public course() {
-
+        // kein Inhalt
     }
 
     /**
+     * initialisiert das Objekt anhand eines JSON-Objekts
      *
-     * @param content
+     * @param content der zukünftige Inhalt
      */
     public course(JsonObject content) {
         id = handleStringEntry(content, "id", id);
@@ -76,8 +94,9 @@ public class course extends structure {
     }
 
     /**
+     * wandelt das Objekt in eine Textdarstellung um (JSON)
      *
-     * @return
+     * @return die Textdarstellung (als JSON)
      */
     @Override
     public String encode() {

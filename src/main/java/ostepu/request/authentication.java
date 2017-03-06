@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Till Uhlig <till.uhlig@student.uni-halle.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,14 +19,16 @@ package ostepu.request;
 import java.net.HttpURLConnection;
 
 /**
+ * eine abstrakte Klasse für Authentifizierungsmethoden
  *
  * @author Till Uhlig <till.uhlig@student.uni-halle.de>
  */
 public abstract class authentication {
 
     /**
+     * setzt die notwendigen Parameter in einer HTTP-Anfrage
      *
-     * @param connection
+     * @param connection die Verbindung
      */
     public abstract void performAuth(HttpURLConnection connection);
 

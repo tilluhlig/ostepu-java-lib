@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Till Uhlig <till.uhlig@student.uni-halle.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,15 +16,12 @@
  */
 package ostepu.process.commands;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
@@ -37,38 +34,61 @@ import ostepu.structure.course;
 import ostepu.structure.link;
 
 /**
+ * dieser Befehl trägt unseren Webservice als Verarbeitung bei OSTEPU ein
  *
  * @author Till Uhlig <till.uhlig@student.uni-halle.de>
  */
 public class postCourse implements command {
 
     @Override
-    public void execute(ServletContext context, HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException, Exception {
-        PrintWriter out = response.getWriter();
+    public void execute(ServletContext context, HttpServletRequest request, HttpServletResponse response) {
+        try {
+            PrintWriter out = response.getWriter();
+        } catch (IOException ex) {
+            Logger.getLogger(postCourse.class.getName()).log(Level.SEVERE, null, ex);
+            response.setStatus(500);
+            return;
+        }
         component conf = cconfig.loadConfig(context);
         JsonObject mycomponent = cconfig.loadComponent(context);
-        
+
         link postProcess = cconfig.getLink(conf, "postProcess");
-        
-        String incomingCourseString = IOUtils.toString(request.getInputStream());
-        course courseObject = (course) course.decode(incomingCourseString);
-        
-        if (courseObject.getId() == null){
-            response.sendError(500, "missing courseid");
+
+        String incomingCourseString;
+        try {
+            incomingCourseString = IOUtils.toString(request.getInputStream());
+        } catch (IOException ex) {
+            Logger.getLogger(postCourse.class.getName()).log(Level.SEVERE, null, ex);
+            response.setStatus(500);
             return;
         }
-        
+        course courseObject = (course) course.decode(incomingCourseString);
+
+        if (courseObject.getId() == null) {
+            try {
+                response.sendError(500, "missing courseid");
+            } catch (IOException ex) {
+                Logger.getLogger(postCourse.class.getName()).log(Level.SEVERE, null, ex);
+                response.setStatus(500);
+            }
+            return;
+        }
+
         String courseid = courseObject.getId();
         String componentid = conf.getId();
-        
-        httpRequestResult result = cconfig.callConstLink(mycomponent, postProcess, "[{\"exercise\":{\"courseId\":\""+courseid+"\"},\"target\":{\"id\":\""+componentid+"\"}}]", null, new httpAuth());
-        
-        if (result.getStatus() != 201){
-            response.sendError(500, "sign up has failed");
+
+        httpRequestResult result = cconfig.callConstLink(mycomponent, postProcess, "[{\"exercise\":{\"courseId\":\"" + courseid + "\"},\"target\":{\"id\":\"" + componentid + "\"}}]", null, new httpAuth());
+
+        if (result.getStatus() != 201) {
+            try {
+                response.sendError(500, "sign up has failed");
+            } catch (IOException ex) {
+                Logger.getLogger(postCourse.class.getName()).log(Level.SEVERE, null, ex);
+                response.setStatus(500);
+            }
             return;
         }
-        
+
         response.setStatus(201);
     }
 

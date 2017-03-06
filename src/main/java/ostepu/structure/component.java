@@ -21,9 +21,9 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
+ * die Component-Struktur von OSTEPU
  *
  * @author Till Uhlig <till.uhlig@student.uni-halle.de>
  */
@@ -46,6 +46,7 @@ public class component extends structure {
 
     /**
      * wandelt eine Textdarstellung in ein Objekt um
+     *
      * @param content content als JSON Objekt (Eingabe)
      * @return das Objekt
      */
@@ -54,15 +55,16 @@ public class component extends structure {
     }
 
     /**
-     *
+     * der Standardkonstruktor
      */
     public component() {
-
+        // kein Inhalt
     }
 
     /**
+     * initialisiert das Objekt anhand eines JSON-Objekts
      *
-     * @param content
+     * @param content der zukünftige Inhalt
      */
     public component(JsonObject content) {
         id = handleStringEntry(content, "id", id);
@@ -110,8 +112,9 @@ public class component extends structure {
     private ArrayList<link> links = null;
 
     /**
+     * wandelt das Objekt in eine Textdarstellung um (JSON)
      *
-     * @return
+     * @return die Textdarstellung (als JSON)
      */
     @Override
     public String encode() {
@@ -214,8 +217,9 @@ public class component extends structure {
     }
 
     /**
+     * fügt einen Link zur Linkliste hinzu
      *
-     * @param newLink
+     * @param newLink der neue Link
      */
     public final void addLink(link newLink) {
         if (links == null) {

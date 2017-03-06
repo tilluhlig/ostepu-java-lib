@@ -21,20 +21,63 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
+ * die Marking-Struktur von OSTEPU
  *
  * @author Till Uhlig <till.uhlig@student.uni-halle.de>
  */
 public class marking extends structure {
 
+    /*
+     * die ID der Korrektur
+     */
     private String id = null;
+
+    /*
+     * die Einsendung
+     */
     private submission submission = null;
+
+    /*
+     * die ID des Kontrolleurs (wenn die ID des Studenten hier steht, dann wurde
+     * die Einsendung durch das System oder etwas anderes automatisches
+     * bewertet)
+     */
     private String tutorId = null;
+
+    /*
+     * ein Kommentar zur Korrektur
+     */
     private String tutorComment = null;
+
+    /*
+     * die Datei der Korrektur
+     */
     private file file = null;
+
+    /*
+     * die Bewertung
+     */
     private String points = null;
+
+    /*
+     * ob die Einsendung etwas besonderes ist (es gibt keine Definition, wird
+     * nicht genutzt)
+     */
     private String outstanding = null;
+
+    /*
+     * der Status (0-4) entsprechend der Statusdefinitionen
+     */
     private String status = null;
+
+    /*
+     * der Unix-Zeitstempel der Erstellung
+     */
     private String date = null;
+
+    /*
+     * 1 = die Korrekturdatei wird dem Studenten nicht angezeigt, 0 = normal
+     */
     private String hideFile = null;
 
     /**
@@ -63,15 +106,16 @@ public class marking extends structure {
     }
 
     /**
-     *
+     * der Standardkonstruktor
      */
     public marking() {
-
+        // kein Inhalt
     }
 
     /**
+     * initialisiert das Objekt anhand eines JSON-Objekts
      *
-     * @param content
+     * @param content der zukünftige Inhalt
      */
     public marking(JsonObject content) {
         id = handleStringEntry(content, "id", id);
@@ -93,8 +137,9 @@ public class marking extends structure {
     }
 
     /**
+     * wandelt das Objekt in eine Textdarstellung um (JSON)
      *
-     * @return
+     * @return die Textdarstellung (als JSON)
      */
     @Override
     public String encode() {
@@ -253,11 +298,34 @@ public class marking extends structure {
         this.hideFile = hideFile;
     }
 
-    public static final String NICHT_ZUGEWIESEN_STATUS = "-1";
-    public static final String NICHT_EINGESENDET_STATUS = "0";
-    public static final String UNKORRIGIERT_STATUS = "1";
-    public static final String VORLAEUFIG_STATUS = "2";
-    public static final String KORRIGIERT_STATUS = "3";
-    public static final String AUTOMATISCH_STATUS = "4";
+    /**
+     * Korrekturstatus: die Einsendung wurde nicht zugewiesen
+     */
+    public static final String STATUS_NICHT_ZUGEWIESEN = "-1";
+
+    /**
+     * Korrekturstatus: es wurde nicht eingesendet
+     */
+    public static final String STATUS_NICHT_EINGESENDET = "0";
+
+    /**
+     * Korrekturstatus: die Einsendung ist noch nicht korrigiert
+     */
+    public static final String STATUS_UNKORRIGIERT = "1";
+
+    /**
+     * Korrekturstatus: der Korrektur ist vorläufig
+     */
+    public static final String STATUS_VORLAEUFIG = "2";
+
+    /**
+     * Korrekturstatus: der Einsendung ist vollständig bewertet
+     */
+    public static final String STATUS_KORRIGIERT = "3";
+
+    /**
+     * Korrekturstatus: die Einsendung wurde automatisch bewertet
+     */
+    public static final String STATUS_AUTOMATISCH = "4";
 
 }

@@ -51,8 +51,6 @@ public class fileUtils {
      * @param useCache   ob die Datei lokal gespeichert und abgefragt werden
      *                   soll (true = nutze Cache, false = sonst)
      * @return der Inhalt der Datei
-     * @throws IOException
-     * @throws Exception
      */
     public static byte[] getFile(ServletContext context, file fileObject, boolean useCache) {
         return getFile(context, fileObject, useCache, new noAuth());
@@ -65,8 +63,6 @@ public class fileUtils {
      * @param context    der Kontext des Servlet
      * @param fileObject das Dateiobjekt
      * @return der Inhalt der Datei
-     * @throws IOException
-     * @throws Exception
      */
     public static byte[] getFile(ServletContext context, file fileObject) {
         return getFile(context, fileObject, true, new noAuth());
@@ -80,8 +76,6 @@ public class fileUtils {
      * @param fileObject das Dateiobjekt
      * @param auth       die Authentifizierungsdaten
      * @return der Inhalt der Datei
-     * @throws IOException
-     * @throws Exception
      */
     public static byte[] getFile(ServletContext context, file fileObject, authentication auth) {
         return getFile(context, fileObject, true, auth);
@@ -97,8 +91,6 @@ public class fileUtils {
      *                   soll (true = nutze Cache, false = sonst)
      * @param auth       die Authentifizierungsdaten
      * @return der Inhalt der Datei
-     * @throws IOException
-     * @throws Exception
      */
     public static byte[] getFile(ServletContext context, file fileObject, boolean useCache, authentication auth) {
         if (fileObject.getAddress() != null) {
@@ -132,8 +124,6 @@ public class fileUtils {
      * @param context der Kontext des Servlet
      * @param URL     die Addresse der Datei
      * @return der Inhalt der Datei
-     * @throws IOException
-     * @throws Exception
      */
     public static byte[] getFile(ServletContext context, String URL) {
         return getFile(context, URL, true, new noAuth());
@@ -146,8 +136,6 @@ public class fileUtils {
      * @param URL     die Addresse der Datei
      * @param auth    die Authentifizierungsdaten
      * @return der Inhalt der Datei
-     * @throws IOException
-     * @throws Exception
      */
     public static byte[] getFile(ServletContext context, String URL, authentication auth) {
         return getFile(context, URL, true, auth);
@@ -160,8 +148,6 @@ public class fileUtils {
      * @param useCache ob die Datei lokal gespeichert und abgefragt werden soll
      *                 (true = nutze Cache, false = sonst)
      * @return der Inhalt der Datei
-     * @throws IOException
-     * @throws Exception
      */
     public static byte[] getFile(ServletContext context, String URL, boolean useCache) {
         return getFile(context, URL, useCache, new noAuth());
@@ -177,8 +163,6 @@ public class fileUtils {
      *                 (true = nutze Cache, false = sonst)
      * @param auth     die Authentifizierungsdaten
      * @return der Inhalt der Datei
-     * @throws IOException
-     * @throws Exception
      */
     public static byte[] getFile(ServletContext context, String URL, boolean useCache, authentication auth) {
         String filePath = null;
@@ -222,9 +206,6 @@ public class fileUtils {
                 }
 
                 return result.getContent();
-            } catch (IOException ex) {
-                Logger.getLogger(fileUtils.class.getName()).log(Level.SEVERE, null, ex);
-                return null;
             } catch (Exception ex) {
                 Logger.getLogger(fileUtils.class.getName()).log(Level.SEVERE, null, ex);
                 return null;
@@ -232,12 +213,23 @@ public class fileUtils {
         }
     }
 
+    /**
+     * kodiert einen String als Base64
+     *
+     * @param content der zu kodierende Text
+     * @return der Base64 kodierte Text
+     */
     public static String encodeBase64(String content) {
         Encoder enc = Base64.getEncoder();
         return new String(enc.encode(content.getBytes()));
-
     }
 
+    /**
+     * dekodiert einen Base64 Text
+     *
+     * @param content der Base64 kodierte Text
+     * @return der resultierende Text
+     */
     public static String decodeBase64(String content) {
         Decoder dec = Base64.getDecoder();
         return new String(dec.decode(content));

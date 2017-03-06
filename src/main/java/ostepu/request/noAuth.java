@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Till Uhlig <till.uhlig@student.uni-halle.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -17,22 +17,22 @@
 package ostepu.request;
 
 import java.net.HttpURLConnection;
-import java.util.Base64;
 
 /**
+ * eine Authentifizierungsmethode ohne Authentifizierung
  *
  * @author Till Uhlig <till.uhlig@student.uni-halle.de>
  */
 public class noAuth extends authentication {
 
     /**
+     * führt die Authentifizierung aus
      *
-     * @param connection
+     * @param connection der Http-Verbindung
      */
     @Override
     public void performAuth(HttpURLConnection connection) {
-        // wir müssen hier nichts mehr machen
-        return;
+        // wir müssen hier nichts weiter machen
     }
 
 }

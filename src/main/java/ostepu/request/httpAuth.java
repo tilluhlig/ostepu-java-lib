@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Till Uhlig <till.uhlig@student.uni-halle.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -30,6 +30,7 @@ import java.util.Base64;
 import java.util.Base64.Encoder;
 
 /**
+ * führt eine simple HTTP-Authentifizierung durch
  *
  * @author Till Uhlig <till.uhlig@student.uni-halle.de>
  */
@@ -45,8 +46,9 @@ public class httpAuth extends authentication {
     }
 
     /**
+     * liest die lokalen Authentifizierungsdaten aus der data/AuthConfig.json
      *
-     * @param context
+     * @param context der Kontext des Servlet
      */
     public static void loadLocalAuthData(ServletContext context) {
         if (authData == null) {
@@ -67,8 +69,9 @@ public class httpAuth extends authentication {
     }
 
     /**
+     * führt eine simple HTTP-Authentifizierung durch (setzt "Authorization")
      *
-     * @param connection
+     * @param connection die HTTP-Verbindung
      */
     @Override
     public void performAuth(HttpURLConnection connection) {

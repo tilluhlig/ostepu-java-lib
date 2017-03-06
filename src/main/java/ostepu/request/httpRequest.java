@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Till Uhlig <till.uhlig@student.uni-halle.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -23,6 +23,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -34,67 +36,33 @@ public class httpRequest {
 
     /**
      *
-     * @param url
-     * @return
-     * @throws MalformedURLException
-     * @throws ProtocolException
-     * @throws IOException
+     * @param url    die Zieladresse
+     * @param method die Aufrufmethode (sowas wie GET, POST, DELETE)
+     * @return das Anfrageresultat
      */
-    public static httpRequestResult custom(String url) throws MalformedURLException, ProtocolException, IOException {
-        return custom(url, "GET", "", new noAuth());
-    }
-
-    /**
-     *
-     * @param url
-     * @param auth
-     * @return
-     * @throws MalformedURLException
-     * @throws ProtocolException
-     * @throws IOException
-     */
-    public static httpRequestResult custom(String url, authentication auth) throws MalformedURLException, ProtocolException, IOException {
-        return custom(url, "GET", "", auth);
-    }
-
-    /**
-     *
-     * @param url
-     * @param method
-     * @return
-     * @throws MalformedURLException
-     * @throws ProtocolException
-     * @throws IOException
-     */
-    public static httpRequestResult custom(String url, String method) throws MalformedURLException, ProtocolException, IOException {
+    public static httpRequestResult custom(String url, String method) {
         return custom(url, method, "", new noAuth());
     }
 
     /**
      *
-     * @param url
-     * @param method
-     * @param auth
-     * @return
-     * @throws MalformedURLException
-     * @throws ProtocolException
-     * @throws IOException
+     * @param url    die Zieladresse
+     * @param method die Aufrufmethode (sowas wie GET, POST, DELETE)
+     * @param auth   eine Authentifizierungsmethode (noAuth, httpAuth)
+     * @return das Anfrageresultat
      */
-    public static httpRequestResult custom(String url, String method, authentication auth) throws MalformedURLException, ProtocolException, IOException {
+    public static httpRequestResult custom(String url, String method, authentication auth) {
         return custom(url, method, "", auth);
     }
 
     /**
      *
-     * @param url
-     * @param method
-     * @param content
-     * @return
-     * @throws MalformedURLException
-     * @throws ProtocolException
-     * @throws IOException
+     * @param url     die Zieladresse
+     * @param method  die Aufrufmethode (sowas wie GET, POST, DELETE)
+     * @param content der Anfrageinhalt
+     * @return das Anfrageresultat
      */
-    public static httpRequestResult custom(String url, String method, String content) throws MalformedURLException, ProtocolException, IOException {
+    public static httpRequestResult custom(String url, String method, String content) {
         return custom(url, method, content, new noAuth());
     }
 
@@ -105,16 +73,32 @@ public class httpRequest {
      * @param url     die Zieladresse
      * @param method  die Aufrufmethode (sowas wie GET, POST, DELETE)
      * @param content der Anfrageinhalt
-     * @param auth
+     * @param auth    eine Authentifizierungsmethode (noAuth, httpAuth)
      * @return das Anfrageresultat
-     * @throws MalformedURLException
-     * @throws ProtocolException
-     * @throws IOException
      */
-    public static httpRequestResult custom(String url, String method, String content, authentication auth) throws MalformedURLException, ProtocolException, IOException {
-        URL urlurl = new URL(url);
-        HttpURLConnection connection = (HttpURLConnection) urlurl.openConnection();
-        connection.setRequestMethod(method);
+    public static httpRequestResult custom(String url, String method, String content, authentication auth) {
+        URL urlurl;
+        try {
+            urlurl = new URL(url);
+        } catch (MalformedURLException ex) {
+            Logger.getLogger(httpRequest.class.getName()).log(Level.SEVERE, null, ex);
+            return new httpRequestResult(500, new byte[]{});
+        }
+        HttpURLConnection connection;
+        try {
+            connection = (HttpURLConnection) urlurl.openConnection();
+        } catch (IOException ex) {
+            Logger.getLogger(httpRequest.class.getName()).log(Level.SEVERE, null, ex);
+            return new httpRequestResult(500, new byte[]{});
+        }
+
+        try {
+            connection.setRequestMethod(method);
+        } catch (ProtocolException ex) {
+            // falsche Methode
+            Logger.getLogger(httpRequest.class.getName()).log(Level.SEVERE, null, ex);
+            return new httpRequestResult(500, new byte[]{});
+        }
         connection.setDoInput(true);
         connection.setDoOutput(true);
         connection.setUseCaches(false);
@@ -123,11 +107,11 @@ public class httpRequest {
         // connection.setRequestProperty("Cache-Control","no-cache");
         connection.setRequestProperty("Content-Type",
                 "application/x-www-form-urlencoded");
-        
+
         if (auth != null) {
             auth.performAuth(connection);
         }
-        
+
         if (!"".equals(content)) {
             connection.setRequestProperty("Content-Length", String.valueOf(content.length()));
         }
@@ -137,13 +121,24 @@ public class httpRequest {
         httpRequestResult Result;
         try {
             if (!"".equals(content)) {
-                writer = new OutputStreamWriter(connection.getOutputStream());
-                writer.write(content);
-                writer.flush();
+                try {
+                    writer = new OutputStreamWriter(connection.getOutputStream());
+                    writer.write(content);
+                    writer.flush();
+                } catch (IOException ex) {
+                    Logger.getLogger(httpRequest.class.getName()).log(Level.SEVERE, null, ex);
+                    return new httpRequestResult(500, new byte[]{});
+                }
             }
         } finally {
             Result = new httpRequestResult();
-            Result.setStatus(connection.getResponseCode());
+            try {
+                Result.setStatus(connection.getResponseCode());
+            } catch (IOException ex) {
+                Logger.getLogger(httpRequest.class.getName()).log(Level.SEVERE, null, ex);
+                return new httpRequestResult(500, new byte[]{});
+            }
+
             Result.setHeaders(connection.getHeaderFields());
             // Result.setContent((String) connection.getContent());
             InputStream stream = connection.getErrorStream();
@@ -154,27 +149,39 @@ public class httpRequest {
                     stream = null;
                 }
             }
-            
+
             if (stream != null) {
                 // This is a try with resources, Java 7+ only
                 // If you use Java 6 or less, use a finally block instead
-                byte[] res = IOUtils.toByteArray(stream);
-                stream.close();
+                byte[] res;
+                try {
+                    res = IOUtils.toByteArray(stream);
+                    stream.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(httpRequest.class.getName()).log(Level.SEVERE, null, ex);
+                    return new httpRequestResult(500, new byte[]{});
+                }
                 Result.setContent(res);
             } else {
                 Result.setContent("".getBytes());
             }
-            
+
             Result.setMethod(method);
             Result.setUrl(url);
         }
 
         // ab hier wird die Antwort zusammengebaut
         if (writer != null) {
-            writer.close();
+            try {
+                writer.close();
+            } catch (IOException ex) {
+                // der Stream konnte nicht geschlossen werden
+                Logger.getLogger(httpRequest.class.getName()).log(Level.SEVERE, null, ex);
+                return new httpRequestResult(500, new byte[]{});
+            }
         }
         connection.disconnect();
-        
+
         return Result;
     }
 
@@ -183,20 +190,19 @@ public class httpRequest {
      *
      * @param url die Zieladresse
      * @return das Anfrageresultat
-     * @throws Exception
      */
-    public static httpRequestResult delete(String url) throws Exception {
+    public static httpRequestResult delete(String url) {
         return custom(url, "DELETE", "");
     }
 
     /**
+     * führt eine DELETE-Anfrage aus
      *
-     * @param url
-     * @param auth
-     * @return
-     * @throws Exception
+     * @param url  die Zieladresse
+     * @param auth eine Authentifizierungsmethode (noAuth, httpAuth)
+     * @return das Anfrageresultat
      */
-    public static httpRequestResult delete(String url, authentication auth) throws Exception {
+    public static httpRequestResult delete(String url, authentication auth) {
         return custom(url, "DELETE", "", auth);
     }
 
@@ -205,20 +211,19 @@ public class httpRequest {
      *
      * @param url die Zieladresse
      * @return das Anfrageresultat
-     * @throws Exception
      */
-    public static httpRequestResult get(String url) throws Exception {
+    public static httpRequestResult get(String url) {
         return custom(url, "GET", "");
     }
 
     /**
+     * führt eine GET-Anfrage aus
      *
-     * @param url
-     * @param auth
-     * @return
-     * @throws Exception
+     * @param url  die Zieladresse
+     * @param auth eine Authentifizierungsmethode (noAuth, httpAuth)
+     * @return das Anfrageresultat
      */
-    public static httpRequestResult get(String url, authentication auth) throws Exception {
+    public static httpRequestResult get(String url, authentication auth) {
         return custom(url, "GET", "", auth);
     }
 
@@ -228,21 +233,20 @@ public class httpRequest {
      * @param url     die Zieladresse
      * @param content der Anfrageinhalt
      * @return das Anfrageresultat
-     * @throws Exception
      */
-    public static httpRequestResult post(String url, String content) throws Exception {
+    public static httpRequestResult post(String url, String content) {
         return custom(url, "POST", content);
     }
 
     /**
+     * führt eine POST-Anfrage aus
      *
-     * @param url
-     * @param content
-     * @param auth
-     * @return
-     * @throws Exception
+     * @param url     die Zieladresse
+     * @param content der Anfrageinhalt
+     * @param auth    eine Authentifizierungsmethode (noAuth, httpAuth)
+     * @return das Anfrageresultat
      */
-    public static httpRequestResult post(String url, String content, authentication auth) throws Exception {
+    public static httpRequestResult post(String url, String content, authentication auth) {
         return custom(url, "POST", content, auth);
     }
 
@@ -252,22 +256,21 @@ public class httpRequest {
      * @param url     die Zieladresse
      * @param content der Anfrageinhalt
      * @return das Anfrageresultat
-     * @throws Exception
      */
-    public static httpRequestResult put(String url, String content) throws Exception {
+    public static httpRequestResult put(String url, String content) {
         return custom(url, "PUT", content);
     }
 
     /**
+     * führt eine PUT-Anfrage aus
      *
-     * @param url
-     * @param content
-     * @param auth
-     * @return
-     * @throws Exception
+     * @param url     die Zieladresse
+     * @param content der Anfrageinhalt
+     * @param auth    eine Authentifizierungsmethode (noAuth, httpAuth)
+     * @return das Anfrageresultat
      */
-    public static httpRequestResult put(String url, String content, authentication auth) throws Exception {
+    public static httpRequestResult put(String url, String content, authentication auth) {
         return custom(url, "PUT", content, auth);
     }
-    
+
 }

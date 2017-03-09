@@ -1,5 +1,7 @@
 # SQaLibur-OSTEPU-lib
 
+Dieses Projekt gehört zum Hauptprojekt SQaLibur-Core (https://github.com/tilluhlig/sqalibur-core).
+
 Diese Bibliothek bietet die Möglichkeit, ein Java-Servlet als Komponente in OSTEPU einzubinden und in eine Veranstaltung als ``Verarbeitung`` einzutragen. Dazu müssen die Dateien ``data/Commands.json`` und
 ``data/Component.json`` entsprechend im Servlet ausgefüllt sein.
 

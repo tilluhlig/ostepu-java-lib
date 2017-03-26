@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 2017 Till Uhlig <till.uhlig@student.uni-halle.de>
  *
  * This program is free software: you can redistribute it and/or modify
@@ -16,7 +16,9 @@
  */
 package ostepu.cconfig;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,9 +27,11 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletContext;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 
 /**
  * dieser Befehl liefert Dateien des "help" Ordners als Hilfedateien für OSTEPU
@@ -57,7 +61,6 @@ public class help {
         }
 
         if (!"GET".equals(request.getMethod())) {
-            System.out.println("bb");
             try {
                 response.sendError(404);
             } catch (IOException ex) {
@@ -67,14 +70,15 @@ public class help {
             return;
         }
 
-        PrintWriter out;
+        ServletOutputStream out;
         try {
-            out = response.getWriter();
+            out = response.getOutputStream();
         } catch (IOException ex) {
             Logger.getLogger(help.class.getName()).log(Level.SEVERE, null, ex);
             response.setStatus(500);
             return;
         }
+
         String[] helpPath = pathInfo.split("/");
         String extension = FilenameUtils.getExtension(pathInfo);
         String language = helpPath[1];
@@ -85,8 +89,12 @@ public class help {
 
         try {
             if (Files.exists(helpFile)) {
-                out.write(String.join("\n", Files.readAllLines(helpFile)));
+                InputStream inp = new FileInputStream(helpFile.toFile());
+                byte[] res = IOUtils.toByteArray(inp);
+                inp.close();
+                out.write(res);
                 response.setStatus(200);
+                response.setHeader("Content-Type", "charset=utf-8");
             } else {
                 response.sendError(404);
             }
@@ -94,7 +102,11 @@ public class help {
             Logger.getLogger(help.class.getName()).log(Level.SEVERE, null, ex);
             response.setStatus(500);
         } finally {
-            out.close();
+            try {
+                out.close();
+            } catch (IOException ex) {
+                Logger.getLogger(help.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 

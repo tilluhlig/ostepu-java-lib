@@ -67,7 +67,7 @@ public class cconfig extends HttpServlet {
             control.request(getServletContext(), request, response);
         } else {
             try {
-                response.sendError(404);
+                response.sendError(404, "unbekannter Befehl");
             } catch (IOException ex) {
                 Logger.getLogger(cconfig.class.getName()).log(Level.SEVERE, null, ex);
                 response.setStatus(500);

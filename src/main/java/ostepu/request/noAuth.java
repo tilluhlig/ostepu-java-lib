@@ -21,7 +21,7 @@ import java.net.HttpURLConnection;
 /**
  * eine Authentifizierungsmethode ohne Authentifizierung
  *
- * @author Till Uhlig <till.uhlig@student.uni-halle.de>
+ * @author Till Uhlig {@literal <till.uhlig@student.uni-halle.de>}
  */
 public class noAuth extends authentication {
 

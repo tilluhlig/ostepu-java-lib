@@ -23,7 +23,7 @@ import com.google.gson.JsonParser;
 /**
  * die Reference-Struktur von OSTEPU
  *
- * @author Till Uhlig <till.uhlig@student.uni-halle.de>
+ * @author Till Uhlig {@literal <till.uhlig@student.uni-halle.de>}
  */
 public class reference extends structure {
 

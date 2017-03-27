@@ -36,7 +36,7 @@ import ostepu.structure.link;
 /**
  * dieser Befehl trägt unseren Webservice als Verarbeitung bei OSTEPU ein
  *
- * @author Till Uhlig <till.uhlig@student.uni-halle.de>
+ * @author Till Uhlig {@literal <till.uhlig@student.uni-halle.de>}
  */
 public class postCourse implements command {
 

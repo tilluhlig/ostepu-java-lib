@@ -33,7 +33,7 @@ import javax.servlet.ServletContext;
 
 /**
  *
- * @author Till
+ * @author Till Uhlig {@literal <till.uhlig@student.uni-halle.de>}
  */
 public class info {
 

@@ -30,7 +30,7 @@ import org.apache.commons.io.IOUtils;
 /**
  * Diese Klasse erlaubt http-Aufrufe
  *
- * @author Till Uhlig <till.uhlig@student.uni-halle.de>
+ * @author Till Uhlig {@literal <till.uhlig@student.uni-halle.de>}
  */
 public class httpRequest {
 

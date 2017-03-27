@@ -38,7 +38,7 @@ import ostepu.structure.reference;
  * Diese Klasse enthält Methoden für den Umgang mit Dateien zwischen OSTEPU und
  * externen Bibliotheken
  *
- * @author Till Uhlig <till.uhlig@student.uni-halle.de>
+ * @author Till Uhlig {@literal <till.uhlig@student.uni-halle.de>}
  */
 public class fileUtils {
 

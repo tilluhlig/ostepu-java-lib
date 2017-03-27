@@ -25,7 +25,7 @@ import java.util.Map;
 /**
  * die Basisstruktur von OSTEPU
  *
- * @author Till Uhlig <till.uhlig@student.uni-halle.de>
+ * @author Till Uhlig {@literal <till.uhlig@student.uni-halle.de>}
  */
 abstract public class structure {
 

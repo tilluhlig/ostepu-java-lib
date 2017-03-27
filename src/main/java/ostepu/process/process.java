@@ -34,7 +34,7 @@ import ostepu.request.httpAuth;
 
 /**
  *
- * @author Till
+ * @author Till Uhlig {@literal <till.uhlig@student.uni-halle.de>}
  */
 public class process extends HttpServlet {
 

@@ -41,7 +41,7 @@ import ostepu.structure.link;
  * Dieses Servlet behandelt die Konfiguration dieses Webservices als Komponente
  * von OSTEPU
  *
- * @author Till
+ * @author Till Uhlig {@literal <till.uhlig@student.uni-halle.de>}
  */
 public class cconfig extends HttpServlet {
 
@@ -262,7 +262,7 @@ public class cconfig extends HttpServlet {
      * @param linkObject  die Verbindung
      * @param content     der Inhalt
      * @param placeholder Platzhalter, welche im Aufrufbefehl ersetzt werden
-     *                    soll (PLATZHALTER => TEXT)
+     *                    soll (PLATZHALTER =&gt; TEXT)
      * @return das Ergebnis
      */
     public static httpRequestResult callConstLink(JsonObject mycomponent, link linkObject, String content, Map<String, String> placeholder) {
@@ -277,7 +277,7 @@ public class cconfig extends HttpServlet {
      * @param linkObject  die Verbindung
      * @param content     der Inhalt
      * @param placeholder placeholder Platzhalter, welche im Aufrufbefehl
-     *                    ersetzt werden soll (PLATZHALTER => TEXT)
+     *                    ersetzt werden soll (PLATZHALTER =&gt; TEXT)
      * @param auth        eine Authentifizierungsmethode
      * @return das Ergebnis
      */

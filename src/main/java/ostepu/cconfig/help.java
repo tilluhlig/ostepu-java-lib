@@ -36,7 +36,7 @@ import org.apache.commons.io.IOUtils;
 /**
  * dieser Befehl liefert Dateien des "help" Ordners als Hilfedateien für OSTEPU
  *
- * @author Till
+ * @author Till Uhlig {@literal <till.uhlig@student.uni-halle.de>}
  */
 public class help {
 

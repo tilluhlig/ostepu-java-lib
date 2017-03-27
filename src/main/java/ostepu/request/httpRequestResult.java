@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * Diese Klasse stellt das Resultat eines http-Aufrufs dar
  *
- * @author Till Uhlig <till.uhlig@student.uni-halle.de>
+ * @author Till Uhlig {@literal <till.uhlig@student.uni-halle.de>}
  */
 public class httpRequestResult {
 

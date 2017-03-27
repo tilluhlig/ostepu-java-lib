@@ -28,7 +28,7 @@ import ostepu.process.command;
 /**
  * Dieser Befehl trägt das Modul aus der Veranstaltung aus (als Verarbeitung)
  *
- * @author Till Uhlig <till.uhlig@student.uni-halle.de>
+ * @author Till Uhlig {@literal <till.uhlig@student.uni-halle.de>}
  */
 public class deleteCourse implements command {
 

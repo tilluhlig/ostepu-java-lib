@@ -35,7 +35,7 @@ import ostepu.structure.process;
  * etwas einsendet) Dabei handelt es sich hierbei allerdings nur um ein DUMMY,
  * falls keine konkrete Umsetzung anderweitig implementiert wurde
  *
- * @author Till
+ * @author Till Uhlig {@literal <till.uhlig@student.uni-halle.de>}
  */
 public class postProcess implements command {
 

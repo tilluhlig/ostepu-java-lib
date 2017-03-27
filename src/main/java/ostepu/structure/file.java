@@ -23,7 +23,7 @@ import com.google.gson.JsonParser;
 /**
  * die File-Struktur von OSTEPU
  *
- * @author Till Uhlig <till.uhlig@student.uni-halle.de>
+ * @author Till Uhlig {@literal <till.uhlig@student.uni-halle.de>}
  */
 public class file extends structure {
 

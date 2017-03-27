@@ -37,7 +37,7 @@ import ostepu.structure.link;
  * dieser Befehl prüft, ob die Komponente korrekt als Verarbeitung eingetragen
  * ist
  *
- * @author Till Uhlig <till.uhlig@student.uni-halle.de>
+ * @author Till Uhlig {@literal <till.uhlig@student.uni-halle.de>}
  */
 public class getCourseExists implements command {
 

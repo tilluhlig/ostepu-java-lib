@@ -32,7 +32,7 @@ import java.util.Base64.Encoder;
 /**
  * führt eine simple HTTP-Authentifizierung durch
  *
- * @author Till Uhlig <till.uhlig@student.uni-halle.de>
+ * @author Till Uhlig {@literal <till.uhlig@student.uni-halle.de>}
  */
 public class httpAuth extends authentication {
 

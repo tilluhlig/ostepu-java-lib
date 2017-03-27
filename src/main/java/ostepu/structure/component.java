@@ -25,7 +25,7 @@ import java.util.ArrayList;
 /**
  * die Component-Struktur von OSTEPU
  *
- * @author Till Uhlig <till.uhlig@student.uni-halle.de>
+ * @author Till Uhlig {@literal <till.uhlig@student.uni-halle.de>}
  */
 public class component extends structure {
 

@@ -31,7 +31,7 @@ import org.apache.commons.io.FileUtils;
 /**
  * diese Klasse speichert und liefert Dateien
  *
- * @author Till Uhlig <till.uhlig@student.uni-halle.de>
+ * @author Till Uhlig {@literal <till.uhlig@student.uni-halle.de>}
  */
 public class fileCache {
 

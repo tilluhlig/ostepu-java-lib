@@ -59,7 +59,7 @@ public class info {
             response.setStatus(500);
             return;
         }
-        Path commandsPath = Paths.get(context.getRealPath("data/commands.json"));
+        Path commandsPath = Paths.get(context.getRealPath("/data/Commands.json"));
 
         try {
             if (Files.exists(commandsPath)) {
@@ -108,7 +108,7 @@ public class info {
             response.setStatus(500);
             return;
         }
-        Path componentPath = Paths.get(context.getRealPath("data/component.json"));
+        Path componentPath = Paths.get(context.getRealPath("/data/Component.json"));
 
         try {
             if (Files.exists(componentPath)) {
@@ -137,8 +137,8 @@ public class info {
      * @param response das Antwortobjekt
      */
     public static void getInfo(ServletContext context, String language, HttpServletRequest request, HttpServletResponse response) {
-        String infoFile = context.getRealPath("data/help/" + language + ".md");
-        String defaultInfoFile = context.getRealPath("data/help/" + language + ".md");
+        String infoFile = context.getRealPath("/data/help/" + language + ".md");
+        String defaultInfoFile = context.getRealPath("/data/help/" + language + ".md");
         PrintWriter out;
         try {
             out = response.getWriter();
@@ -192,7 +192,7 @@ public class info {
             response.setStatus(500);
             return;
         }
-        Path componentPath = Paths.get(context.getRealPath("data/component.json"));
+        Path componentPath = Paths.get(context.getRealPath("/data/Component.json"));
 
         try {
             if (Files.exists(componentPath)) {

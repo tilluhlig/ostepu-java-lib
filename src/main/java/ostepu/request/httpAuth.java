@@ -22,6 +22,7 @@ import com.google.gson.JsonParser;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -52,7 +53,13 @@ public class httpAuth extends authentication {
      */
     public static void loadLocalAuthData(ServletContext context) {
         if (authData == null) {
-            Path confPath = Paths.get(context.getRealPath("data/AuthConfig.json"));
+            Path confPath;
+            try{
+                String localPath = context.getRealPath("/data/AuthConfig.json");
+                confPath = Paths.get(localPath);
+            }catch (Exception e){
+                return;
+            }
 
             try {
                 if (Files.exists(confPath)) {

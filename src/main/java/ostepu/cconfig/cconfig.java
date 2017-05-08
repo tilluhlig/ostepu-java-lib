@@ -132,7 +132,7 @@ public class cconfig extends HttpServlet {
             return myComponent;
         }
 
-        Path cconfigPath = Paths.get(context.getRealPath("data/Component.json"));
+        Path cconfigPath = Paths.get(context.getRealPath("/data/Component.json"));
         try {
             if (Files.exists(cconfigPath)) {
                 List<String> content = Files.readAllLines(cconfigPath);
@@ -164,7 +164,7 @@ public class cconfig extends HttpServlet {
             return myConf;
         }
 
-        Path cconfigPath = Paths.get(context.getRealPath("data/CConfig.json"));
+        Path cconfigPath = Paths.get(context.getRealPath("/data/CConfig.json"));
         try {
             if (Files.exists(cconfigPath)) {
                 List<String> content = Files.readAllLines(cconfigPath);

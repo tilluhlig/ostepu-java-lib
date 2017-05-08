@@ -58,7 +58,7 @@ public class control {
             response.setStatus(500);
             return;
         }
-        Path cconfigPath = Paths.get(context.getRealPath("data/CConfig.json"));
+        Path cconfigPath = Paths.get(context.getRealPath("/data/CConfig.json"));
 
         try {
             if (Files.exists(cconfigPath)) {
@@ -128,7 +128,7 @@ public class control {
             return;
         }
 
-        Path cconfigPath = Paths.get(context.getRealPath("data/CConfig.json"));
+        Path cconfigPath = Paths.get(context.getRealPath("/data/CConfig.json"));
 
         try {
             String q = IOUtils.toString(request.getReader());

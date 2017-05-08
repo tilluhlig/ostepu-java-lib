@@ -85,7 +85,7 @@ public class help {
         helpPath[helpPath.length - 1] = helpPath[helpPath.length - 1].substring(0, helpPath[helpPath.length - 1].length() - extension.length() - 1);
         helpPath = Arrays.copyOfRange(helpPath, 2, helpPath.length);
 
-        Path helpFile = Paths.get(context.getRealPath("data/help/" + String.join("_", helpPath) + "_" + language + "." + extension));
+        Path helpFile = Paths.get(context.getRealPath("/data/help/" + String.join("_", helpPath) + "_" + language + "." + extension));
 
         try {
             if (Files.exists(helpFile)) {

@@ -44,9 +44,9 @@ public class fileCache {
      */
     public static void cacheFile(ServletContext context, byte[] content, String URL) {
         String fileHash = DigestUtils.sha512Hex(URL);
-        String localFile = context.getRealPath("cache/" + fileHash);
+        String localFile = context.getRealPath("/cache/" + fileHash);
 
-        File folder = new File(context.getRealPath("cache"));
+        File folder = new File(context.getRealPath("/cache"));
 
         if (!folder.exists()) {
             // wenn der Ordner nicht existert, versuchen wir ihn anzulegen
@@ -74,7 +74,7 @@ public class fileCache {
      * @param context der Kontext des Servlet
      */
     public static void cleanCache(ServletContext context) {
-        File folder = new File(context.getRealPath("cache"));
+        File folder = new File(context.getRealPath("/cache"));
         if (folder.exists() && folder.isDirectory()) {
             try {
                 FileUtils.deleteDirectory(folder);
@@ -97,7 +97,7 @@ public class fileCache {
     public static String getCachedFilePath(ServletContext context, String URL) {
         // liefert einen lokalen Pfad oder null
         String fileHash = DigestUtils.sha512Hex(URL);
-        String localFile = context.getRealPath("cache/" + fileHash);
+        String localFile = context.getRealPath("/cache/" + fileHash);
 
         try {
             if (Files.exists(Paths.get(localFile))) {
